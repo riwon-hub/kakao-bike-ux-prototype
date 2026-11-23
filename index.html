@@ -1,0 +1,382 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>카카오 T 바이크 UX 프로토타입</title><link rel="stylesheet" href="style.css?v=screen-warning"></head>
+<body><main class="demo">
+ <aside class="controls" aria-label="테스트 설정">
+  <div class="brand"><span>T</span> 카카오 T 바이크</div>
+  <h1>바이크 이용 체험</h1>
+  <label for="theme">화면 스타일</label><select id="theme"><option value="purple">보라색 그라데이션</option><option value="light">라이트</option><option value="dark">다크</option><option value="blue">유사색 그라데이션</option></select>
+  <label for="scenario">주행 시나리오</label><select id="scenario"><option value="normal">정상 주행</option><option value="restricted">서비스 불가 구역 · 상단 경고</option><option value="restricted-filter">서비스 불가 구역 · 화면 필터</option></select>
+  <p id="hint">목적지를 검색하고 반납할 지역과 바이크를 골라 보세요.</p>
+  <button class="reset" id="reset" type="button">처음부터 다시</button>
+ </aside>
+
+ <canvas id="rideScenery" class="ride-scenery" aria-hidden="true"></canvas>
+ <div class="device">
+ <svg class="ride-cockpit" viewBox="0 0 1392 1044" preserveAspectRatio="none" aria-hidden="true">
+  <defs><mask id="cockpitMask" maskUnits="userSpaceOnUse" x="0" y="0" width="1392" height="1044">
+
+   <path fill="white" d="M600 167H789Q842 167 846 223L847 389Q870 391 869 419L869 477Q867 502 848 503L849 686Q847 745 790 746H601Q543 745 543 687V505Q525 504 526 479V416Q527 393 545 392V223Q546 167 600 167Z"/>
+   <path fill="white" d="M0 665Q25 651 47 650Q69 633 99 645Q133 633 159 653L181 689Q194 729 188 772Q183 813 151 841L163 884Q174 948 119 1044H0Z"/>
+   <path fill="white" d="M1392 660Q1350 647 1328 650Q1300 631 1276 647Q1248 639 1227 658L1209 699Q1194 739 1202 781L1237 838Q1226 892 1247 955L1272 1044H1392Z"/>
+   <path fill="white" d="M155 659L208 653L221 683Q269 674 312 689Q359 691 416 723Q473 755 544 761H597V737H758L764 761Q835 766 906 729Q970 691 1028 683Q1096 675 1177 698L1185 661L1234 675L1208 831L1160 819L1168 779Q1080 746 1028 764Q973 786 936 809Q868 844 767 840L754 894H615L595 840Q502 843 439 817Q399 801 358 774Q303 743 245 759L242 809L192 830Z"/>
+   <path fill="white" d="M634 744H754L776 939Q790 974 810 999L825 1044H607L619 982Q641 967 643 936Z"/>
+   <g fill="white">
+    <path d="M599 166H787Q845 168 845 226V392Q870 388 870 416V477Q870 503 847 502V685Q847 740 798 746H757V786H632V746H594Q541 742 541 688V503Q525 502 525 481V415Q525 393 547 393V224Q547 170 599 166Z"/>
+    <path d="M0 657Q16 646 41 649Q61 639 82 644Q107 635 130 649Q147 643 172 654L204 654L226 686Q291 679 340 693Q382 707 420 731Q462 759 501 766L592 773H800L878 765Q924 753 971 721Q1018 690 1073 688L1169 693L1180 657L1214 653Q1230 639 1255 643Q1284 635 1302 649Q1334 637 1359 649Q1380 645 1392 659V1044H1298Q1301 960 1258 893Q1238 862 1237 824L1170 813L1158 761L1085 759Q1041 758 1006 782Q950 820 895 827L803 840L791 864H599L585 838L493 832Q439 827 395 803L344 771Q307 749 254 757L245 805L182 825Q184 866 161 919Q139 976 144 1044H0Z"/>
+    <path d="M628 783H756L767 913L798 988L800 1044H598L605 992L626 942Z"/>
+   </g>
+   <g fill="none" stroke="white" stroke-linecap="round" stroke-linejoin="round">
+    <path stroke-width="18" d="M235 1044L305 872Q315 842 345 842H585M802 842H1032Q1067 842 1081 875L1133 1044"/>
+    <path stroke-width="11" d="M271 944Q406 917 619 918M768 918Q1000 917 1103 944M246 1027Q407 996 615 997M786 997Q971 992 1121 1023M358 847L323 1044M458 847L443 1044M551 847L556 1044M858 847L845 1044M952 847L970 1044M1044 849L1084 1044"/>
+    <path stroke-width="12" d="M222 789Q360 754 547 719M843 718Q1050 650 1176 704"/>
+   </g>
+  </mask></defs>
+  <image href="assets/ride-pov.jpg" width="1392" height="1044" mask="url(#cockpitMask)"/>
+ </svg>
+ <div class="device-screen">
+ <div class="viewport" id="viewport"><article id="phone" class="phone" data-theme="purple" data-stage="home" aria-label="카카오 T 바이크 모바일 화면">
+  <div class="map" aria-hidden="true">
+   <div class="pick-map">
+    <svg class="pick-map-art" viewBox="0 0 402 874" aria-hidden="true">
+     <rect width="402" height="874" class="pick-ground"/>
+     <path class="pick-building" d="M0 0H61L89 34 60 78 0 58Z M154 0H292V72L250 57 214 38Z M119 350H279V473H119Z M311 370H340V494H311Z M0 342L43 366 56 447 0 461Z M359 528H402V589H359Z"/>
+     <path class="pick-green" d="M0 117L67 90 131 121 198 149 258 174 331 191 315 226 272 244 188 255 103 251 0 234Z"/>
+     <path class="pick-street-edge" d="M-10-15L92 25 150 58 219 99 286 131 402 153 M-13 247L105 268 202 264 318 247 404 259 M-10 310L85 329 186 328 277 311 330 271 350 200 374 126 361 50 354-20 M-12 590L81 577 162 576 250 549 334 527 422 528"/>
+     <path class="pick-streets" d="M-10-15L92 25 150 58 219 99 286 131 402 153 M-13 247L105 268 202 264 318 247 404 259 M-10 310L85 329 186 328 277 311 330 271 350 200 374 126 361 50 354-20 M-12 590L81 577 162 576 250 549 334 527 422 528"/>
+     <path class="pick-lanes" d="M34 5L15 38 72 66 64 89 M3 337L42 349 67 423 65 502 M121 347V472H279V347Z M319 349V498 M346 331V490L359 541"/>
+     <text class="pick-map-label" x="69" y="280" transform="rotate(9 69 280)">죽전로238번길</text>
+     <text class="pick-map-label" x="135" y="493" text-anchor="middle">죽전GS자이 아파트</text>
+     <text class="pick-map-label" x="203" y="396" text-anchor="middle">103</text>
+    </svg>
+    <div class="pick-map-status"><span>9:55</span><span class="pick-island">☎ 24분<i></i></span><span>▮▮ ▰</span></div>
+    <div class="pick-map-report"><img src="assets/ride-imgIconSiren.svg" alt="">불편 사항</div>
+   </div>
+   <div class="ride-map">
+    <div class="map-world" id="mapWorld">
+     <svg class="navigation-map" viewBox="-220 -220 842 1314">
+      <defs>
+       <pattern id="restricted-block-pattern" width="52" height="52" patternUnits="userSpaceOnUse">
+        <rect class="map-restricted-fill" width="52" height="52"/>
+        <path class="map-restricted-mark" d="M23.5 23.5l5 5m0-5-5 5"/>
+       </pattern>
+      </defs>
+      <!-- The road surface is the space between the parcels. Restricted parcels are part of the map. -->
+      <path class="map-green" d="M-220-220H65L70-18L108 118L170 190L177 226H-220Z"/>
+      <path class="map-land" d="M102-220H622V220L394 221L339 230H220L215 176L143 100L109-30Z"/>
+      <path class="map-land" d="M-220 486H148L177 507L185 580H106L78 593H-220Z
+        M221 248H329L333 417L334 461H225Z
+        M226 480H335L336 536L320 566L300 580L260 585H224Z
+        M-220 852L-44 851L187 832V1094H-220Z
+        M222 831L413 882V1094H225Z
+        M429 246H622V1094H430Z"/>
+      <path class="map-blocks" d="M241 270H313V326H241Z M250 353H314V434H250Z
+        M247 501H316V542H247Z M26 503H65V554H26Z M83 501H144V551H83Z"/>
+      <g class="figma-zones" aria-hidden="true">
+       <path class="map-restricted zone-west-classic" d="M-72 255.03H148V462.003H-72Z"/>
+       <path class="map-restricted zone-west-gradient" d="M-72 233H148V462H-72Z"/>
+       <path class="map-restricted" d="M221 808.992V604.508H268.2615L310.7969 599.189L335.609 580.277L353.923 547.772L346.243 255.2289L413 244V861Z"/>
+       <path class="map-restricted zone-tip" d="M-27.5806 628.0887H-73V664H-2.2166L55 628.0887L24.3272 591Z"/>
+       <path class="map-restricted" d="M-44 832.898V628.4139L-3.1664 611.77765L29.4125 649.447L65.046 623.0949L83.371 611.77765L106.108 604.24H187.216V813.359Z"/>
+      </g>
+      <path class="map-route-casing" id="routeCasing"/>
+      <path class="map-route-past" id="routePast"/>
+      <path class="map-navigation-line" id="navigationLine"/>
+      <path class="map-cycle-line" id="cycleLine"/>
+      <g id="routeArrows" class="map-route-arrows"/>
+     </svg>
+     <div class="figma-destination">
+      <img src="assets/destination-pin.svg" alt="" width="27" height="37">
+      <span id="ridePinDestination">단국대학교</span>
+     </div>
+     <img id="arrivalBike" class="arrival-bike" alt="" hidden>
+     <img id="rider" class="rider" src="assets/rider-chunshik-v3.png" alt="">
+     <span class="rider-effort" aria-hidden="true"><i></i><i></i></span>
+    </div>
+   </div>
+  </div>
+  <button id="pickerBack" class="pick-map-home" type="button" aria-label="이전 화면" hidden><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M3 11 12 3l9 8v8a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1Z"/></svg></button>
+  <section id="bikeHome" class="bike-home" aria-label="바이크 홈">
+   <div class="home-map home-map-top" aria-hidden="true"><img src="assets/exactdone-imgImage94.png" alt=""></div>
+   <div class="home-map home-map-bottom" aria-hidden="true"><img src="assets/exactdone-imgImage94.png" alt=""></div>
+   <svg class="home-map-details" viewBox="0 0 393 434" aria-hidden="true">
+    <path class="home-map-buildings" d="M116 101h50v19h-50z M204 96h23v46h-23z M111 180h38v13h-38z M158 177h48v16h-48z M268 102h72v24h-72z M269 140h35v20h-35z M317 139h29v40h-29z M278 279h67v26h-67z M309 357h43v17h-43z M115 365h44v19h-44z M116 393h45v21h-45z"/>
+    <g class="home-map-roads">
+     <text x="141" y="232">죽전로238번길</text>
+     <text x="248" y="194" transform="rotate(-90 248 194)">죽전로</text>
+    </g>
+    <g class="home-map-places">
+     <text x="312" y="200" text-anchor="middle">죽전GS자이 아파트</text>
+     <text x="57" y="207" text-anchor="middle" class="home-map-park">비발디공원</text>
+    </g>
+    <circle class="pickup-location-halo" cx="88" cy="397" r="10"/>
+    <circle class="pickup-location" cx="88" cy="397" r="5"/>
+   </svg>
+   <div id="homeMarkers" class="home-markers" aria-label="근처 바이크 및 킥보드"></div>
+   <div class="home-tools">
+    <button id="homeBack" class="entry-round" type="button" aria-label="뒤로"><img src="assets/home-imgIconBack.svg" alt=""></button>
+    <div id="vehicleFilters" class="vehicle-filters" role="group" aria-label="이동 수단">
+     <button type="button" data-vehicle="all" aria-pressed="true">전체</button><button type="button" data-vehicle="bike" aria-pressed="false">자전거</button><button type="button" data-vehicle="kickboard" aria-pressed="false">킥보드</button>
+    </div>
+    <button id="homeFilter" class="entry-round" type="button" aria-label="이동 수단 필터" aria-expanded="false" aria-controls="vehiclePanel"><img src="assets/home-imgIconFilter.svg" alt=""></button>
+   </div>
+   <div id="vehiclePanel" class="vehicle-panel" hidden>
+    <label><input id="rangeFilter" type="checkbox"> 목적지까지 갈 수 있는 바이크</label>
+    <button id="applyFilters" class="btn primary" type="button">적용</button>
+   </div>
+   <button class="home-notice" id="homeNotice" type="button"><b>공지</b> 카카오 T 바이크 첫 30분은 990원! <img src="assets/home-imgIcon2.svg" alt=""></button>
+   <div class="home-sheet">
+    <div class="home-search-group">
+     <button id="destinationSearch" class="home-search" type="button" aria-label="목적지 검색"><img src="assets/home-imgGroup5.svg" alt=""><span id="homeDestination">단국대학교</span></button>
+     <div class="home-shortcuts">
+      <button type="button" id="homePlace"><img src="assets/home-imgIconHome.svg" alt="">집</button>
+      <button type="button" id="campusShortcut"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-6 9 6M4 10v10h16V10M10 20v-5h4v5M3 20h18"/><circle cx="12" cy="10" r="1.3"/></svg>단국대학교</button>
+      <button type="button" id="workPlace"><img src="assets/home-imgIconPlusCircle.svg" alt="">회사</button>
+     </div>
+    </div>
+    <div id="recommendedBikeCard" class="home-recommended review-bike-card" data-card-layout="guide">
+     <img class="review-card-mascot" src="assets/exactdone-imgImage89.png" alt="">
+     <div class="review-bike-route">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5a6 6 0 0 0-6 6c0 4.5 6 10.8 6 10.8s6-6.3 6-10.8a6 6 0 0 0-6-6Z" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linejoin="round"/><circle cx="12" cy="9.3" r="1.8" fill="currentColor"/></svg>
+      <span><span id="reviewBikeDestination">단국대학교</span>까지 갈 수 있는 바이크</span>
+     </div>
+     <button type="button" id="recommendedBike" class="home-bike-details" aria-label="추천 바이크 지도에서 보기">
+      <img class="home-bike-photo" src="assets/home-imgImage98.png" alt="">
+      <span class="home-bike-copy">
+       <strong id="homeBikeNumber">NN4815</strong>
+       <span class="review-bike-meta">도보 2분 · 배터리 <span id="homeBikeBattery">190분</span></span>
+      </span>
+     </button>
+     <button type="button" id="saveHomeBike" class="btn home-save-bike">찜하기</button>
+    </div>
+    <div class="home-promo-panel">
+     <button type="button" class="home-promo" id="homePromo" aria-label="카카오 T 바이크 첫 30분은 990원 이벤트"><img src="assets/home-imgImage4.png" alt=""></button>
+     <div class="home-actions"><button type="button" id="homeScan" class="btn primary"><img src="assets/home-imgIconScan.svg" alt="">QR 스캔하기</button></div>
+    </div>
+   </div>
+   <span class="home-design-indicator" aria-hidden="true"></span>
+  </section>
+  <section id="bikeSearch" class="bike-search" aria-label="목적지 검색 화면" hidden>
+   <form id="destinationForm" class="search-header" autocomplete="off">
+    <button id="searchBack" type="button" class="entry-icon" aria-label="뒤로"><img src="assets/search-imgBack.svg" alt=""></button>
+    <input id="destinationInput" type="search" aria-label="목적지" placeholder="목적지를 검색해 주세요" enterkeyhint="search">
+    <button id="clearSearch" type="button" class="entry-icon" aria-label="검색어 지우기" hidden><img src="assets/search-imgClear.svg" alt=""></button>
+    <span class="search-divider" aria-hidden="true"></span>
+    <button type="submit" class="entry-icon" aria-label="검색"><img src="assets/search-imgSearch.svg" alt=""></button>
+   </form>
+   <div class="search-shortcuts">
+    <button id="searchHomePlace" type="button"><img src="assets/search-imgIcon.svg" alt="">집</button>
+    <button id="searchWorkPlace" type="button"><img src="assets/search-imgIcon1.svg" alt="">회사</button>
+    <button id="stationShortcut" type="button"><img src="assets/search-imgIcon2.svg" alt="">죽전역</button>
+    <button id="sampleDestinations" type="button" aria-label="예시 목적지 보기"><img src="assets/search-imgIcon3.svg" alt=""></button>
+   </div>
+   <div id="searchResults" class="search-results">
+    <button type="button" class="search-row" data-query="단국대학교"><span class="search-icon-tile"><img src="assets/search-imgIcon4.svg" alt=""></span><span><mark>단국</mark>대학교</span></button>
+    <button type="button" class="search-row" data-query="단국대학교죽전캠퍼스"><span class="search-icon-tile"><img src="assets/search-imgIcon4.svg" alt=""></span><span><mark>단국</mark>대학교죽전캠퍼스</span></button>
+    <button type="button" class="search-row" data-query="단국대"><span class="search-icon-tile"><img src="assets/search-imgIcon4.svg" alt=""></span><span><mark>단국</mark>대</span></button>
+    <button type="button" class="search-row search-place" data-place="campus"><span class="search-icon-tile"><img src="assets/search-imgIcon5.svg" alt=""></span><span><mark>단국</mark>대학교 죽전캠퍼스<small>1.11km · 경기 용인시 수지구 죽전로 152</small></span><span class="search-map-chip"><img src="assets/search-imgIcon6.svg" alt=""></span></button>
+    <button type="button" class="search-row search-place" data-place="gate"><span class="search-icon-tile"><img src="assets/search-imgIcon5.svg" alt=""></span><span><mark>단국</mark>대학교 죽전캠퍼스 정문<small>932m · 경기 용인시 수지구 죽전로 152</small></span><span class="search-map-chip"><img src="assets/search-imgIcon6.svg" alt=""></span></button>
+    <p id="searchEmpty" class="search-empty" role="status" hidden>검색 결과가 없어요. 단국대학교를 검색해 보세요.</p>
+   </div>
+  </section>
+  <section id="bikeZone" class="bike-zone" aria-label="목적지 근처 반납 가능 지역" hidden>
+   <div class="zone-map-art" aria-hidden="true">
+    <img class="zone-map-image" src="assets/zone-imgImage252.png" alt="">
+    <div class="zone-map-cleanup"></div>
+    <svg class="zone-overlay zone-east zone-hit-region" viewBox="0 0 205 387.5" aria-hidden="true">
+     <g id="zone-imgVector339-Vector 339">
+     <path d="M0 0V244L99 387.5H205V0H0Z" fill="url(#zone-imgVector339-pattern0_0_256)" fill-opacity="0.16"/>
+     <path d="M0 0V244L99 387.5H205V0H0Z" fill="#292F35" fill-opacity="0.25"/>
+     </g>
+     <defs>
+     <pattern id="zone-imgVector339-pattern0_0_256" patternUnits="userSpaceOnUse" patternTransform="matrix(52.1982 0 0 52.7007 98.1501 189.358)" preserveAspectRatio="none" viewBox="0 0 208.793 210.803" width="1" height="1">
+     <g id="zone-imgVector339-pattern0_0_256_inner">
+     <path id="zone-imgVector339-Union" d="M34.7988 6.36426L23.5205 17.6416L34.6484 28.7695L28.2842 35.1338L17.1562 24.0059L6.51465 34.6484L0.150391 28.2842L10.792 17.6416L0 6.84961L6.36426 0.485352L17.1562 11.2773L28.4346 0L34.7988 6.36426Z" fill="#080D10"/>
+     </g>
+     </pattern></defs>
+    </svg>
+    <svg class="zone-overlay zone-west zone-hit-region" viewBox="0 0 242.881 430.406" aria-hidden="true">
+     <g id="zone-imgVector340-Vector 340">
+     <path d="M104.5 0H0L12 244.551L134.626 430.406H242.881V18L104.5 0Z" fill="url(#zone-imgVector340-pattern0_0_263)" fill-opacity="0.16"/>
+     <path d="M104.5 0H0L12 244.551L134.626 430.406H242.881V18L104.5 0Z" fill="#292F35" fill-opacity="0.25"/>
+     </g>
+     <defs>
+     <pattern id="zone-imgVector340-pattern0_0_263" patternUnits="userSpaceOnUse" patternTransform="matrix(52.1982 0 0 52.7007 117.091 210.811)" preserveAspectRatio="none" viewBox="0 0 208.793 210.803" width="1" height="1">
+     <g id="zone-imgVector340-pattern0_0_263_inner">
+     <path id="zone-imgVector340-Union" d="M34.7988 6.36426L23.5205 17.6416L34.6484 28.7695L28.2842 35.1338L17.1562 24.0059L6.51465 34.6484L0.150391 28.2842L10.792 17.6416L0 6.84961L6.36426 0.485352L17.1562 11.2773L28.4346 0L34.7988 6.36426Z" fill="#080D10"/>
+     </g>
+     </pattern></defs>
+    </svg>
+    <svg class="zone-overlay zone-south zone-hit-region" viewBox="0 0 315.5 126.5" aria-hidden="true">
+     <g id="zone-imgVector346-Vector 346">
+     <path d="M0 0H229.5L315.5 126.5H0V0Z" fill="url(#zone-imgVector346-pattern0_0_265)" fill-opacity="0.16"/>
+     <path d="M0 0H229.5L315.5 126.5H0V0Z" fill="#292F35" fill-opacity="0.25"/>
+     </g>
+     <defs>
+     <pattern id="zone-imgVector346-pattern0_0_265" patternUnits="userSpaceOnUse" patternTransform="matrix(52.1982 0 0 52.7007 153.4 58.8583)" preserveAspectRatio="none" viewBox="0 0 208.793 210.803" width="1" height="1">
+     <g id="zone-imgVector346-pattern0_0_265_inner">
+     <path id="zone-imgVector346-Union" d="M34.7988 6.36426L23.5205 17.6416L34.6484 28.7695L28.2842 35.1338L17.1562 24.0059L6.51465 34.6484L0.150391 28.2842L10.792 17.6416L0 6.84961L6.36426 0.485352L17.1562 11.2773L28.4346 0L34.7988 6.36426Z" fill="#080D10"/>
+     </g>
+     </pattern></defs>
+    </svg>
+    <svg class="zone-overlay zone-north zone-hit-region" viewBox="0 0 198.5 240.124" aria-hidden="true">
+     <g id="zone-imgVector345-Vector 345">
+     <path d="M0 210.987V0H198.5V240.124L165.5 210.987H0Z" fill="url(#zone-imgVector345-pattern0_0_238)" fill-opacity="0.16"/>
+     <path d="M0 210.987V0H198.5V240.124L165.5 210.987H0Z" fill="#292F35" fill-opacity="0.25"/>
+     </g>
+     <defs>
+     <pattern id="zone-imgVector345-pattern0_0_238" patternUnits="userSpaceOnUse" patternTransform="matrix(52.1982 0 0 52.7007 94.9001 115.67)" preserveAspectRatio="none" viewBox="0 0 208.793 210.803" width="1" height="1">
+     <g id="zone-imgVector345-pattern0_0_238_inner">
+     <path id="zone-imgVector345-Union" d="M34.7988 6.36426L23.5205 17.6416L34.6484 28.7695L28.2842 35.1338L17.1562 24.0059L6.51465 34.6484L0.150391 28.2842L10.792 17.6416L0 6.84961L6.36426 0.485352L17.1562 11.2773L28.4346 0L34.7988 6.36426Z" fill="#080D10"/>
+     </g>
+     </pattern></defs>
+    </svg>
+    <svg class="zone-overlay zone-park zone-return-shape" viewBox="0 0 202 119" aria-hidden="true"><path id="zone-imgVector348.svg-Vector 348" d="M0 119V0H164.908L202 33.113V119H0Z" fill="#6BBDFF" fill-opacity="0.2"/></svg>
+    <svg class="zone-overlay zone-southwest zone-return-shape" viewBox="0 0 274.305 354.318" aria-hidden="true"><path id="zone-imgVector349.svg-Vector 349" d="M0 341.698L49.1123 0L189.805 227L274.305 354.318H49.1123L0 341.698Z" fill="#6BBDFF" fill-opacity="0.2"/></svg>
+    <svg class="zone-overlay zone-east zone-gradient zone-hit-region" viewBox="0 0 205 387.5" aria-hidden="true">
+     <g id="zone-purple-imgVector339-Vector 339">
+     <path d="M0 0V235L99 387.5H205V0H0Z" fill="url(#zone-purple-imgVector339-pattern0_0_188)" fill-opacity="0.16"/>
+     <path d="M0 0V235L99 387.5H205V0H0Z" fill="#292F35" fill-opacity="0.25"/>
+     </g>
+     <defs>
+     <pattern id="zone-purple-imgVector339-pattern0_0_188" patternUnits="userSpaceOnUse" patternTransform="matrix(52.1982 0 0 52.7007 98.1501 189.358)" preserveAspectRatio="none" viewBox="0 0 208.793 210.803" width="1" height="1">
+     <g id="zone-purple-imgVector339-pattern0_0_188_inner">
+     <path id="zone-purple-imgVector339-Union" d="M34.7988 6.36426L23.5205 17.6416L34.6484 28.7695L28.2842 35.1338L17.1562 24.0059L6.51465 34.6484L0.150391 28.2842L10.792 17.6416L0 6.84961L6.36426 0.485352L17.1562 11.2773L28.4346 0L34.7988 6.36426Z" fill="#080D10"/>
+     </g>
+     </pattern></defs>
+    </svg>
+    <svg class="zone-overlay zone-west zone-gradient zone-hit-region" viewBox="0 0 259.381 433.906" aria-hidden="true">
+     <g id="zone-purple-imgVector340-Vector 340">
+     <path d="M28.5 0L0 72.5L28.5 248.051L151.126 433.906H259.381V16.5L28.5 0Z" fill="url(#zone-purple-imgVector340-pattern0_0_263)" fill-opacity="0.16"/>
+     <path d="M28.5 0L0 72.5L28.5 248.051L151.126 433.906H259.381V16.5L28.5 0Z" fill="#292F35" fill-opacity="0.25"/>
+     </g>
+     <defs>
+     <pattern id="zone-purple-imgVector340-pattern0_0_263" patternUnits="userSpaceOnUse" patternTransform="matrix(52.1982 0 0 52.7007 125.341 212.561)" preserveAspectRatio="none" viewBox="0 0 208.793 210.803" width="1" height="1">
+     <g id="zone-purple-imgVector340-pattern0_0_263_inner">
+     <path id="zone-purple-imgVector340-Union" d="M34.7988 6.36426L23.5205 17.6416L34.6484 28.7695L28.2842 35.1338L17.1562 24.0059L6.51465 34.6484L0.150391 28.2842L10.792 17.6416L0 6.84961L6.36426 0.485352L17.1562 11.2773L28.4346 0L34.7988 6.36426Z" fill="#080D10"/>
+     </g>
+     </pattern></defs>
+    </svg>
+    <svg class="zone-overlay zone-park zone-gradient zone-return-shape" viewBox="0 0 201.5 115" aria-hidden="true"><path id="zone-purple-imgVector348.svg-Vector 348" d="M0 115V0H164.5L201.5 32V115H0Z" fill="#6BBDFF" fill-opacity="0.2"/></svg>
+    <svg class="zone-overlay zone-southwest zone-gradient zone-return-shape" viewBox="0 0 269.182 414.818" aria-hidden="true"><path id="zone-purple-imgVector349.svg-Vector 349" d="M0 402.198V0L178.335 280.896L269.182 414.818H49.1123L0 402.198Z" fill="#6BBDFF" fill-opacity="0.2"/></svg>
+   </div>
+   <div class="zone-status" aria-hidden="true"><b>8:43</b><span><img src="assets/zone-imgSignal.svg" alt=""><img src="assets/exactdone-imgBattery.svg" alt=""></span></div>
+   <header class="zone-header">
+    <button id="zoneBack" type="button" class="entry-round" aria-label="뒤로"><img src="assets/zone-imgIcon.svg" alt=""></button>
+    <button id="changeDestination" type="button"><span id="zoneDestination">단국대학교</span><img src="assets/zone-imgIconSearch.svg" alt=""></button>
+   </header>
+   <button id="zoneArea" class="zone-area" type="button" aria-label="지도에서 반납 가능 구역 선택" aria-pressed="false"><svg class="zone-area-shape" viewBox="0 0 110.5 160" aria-hidden="true">
+     <path id="zone-imgVector347-Vector 347" d="M2.50001 2.5H108V157.5L2.50001 2.5Z" fill="#6BBDFF" fill-opacity="0.5" stroke-width="5" stroke-linejoin="round" stroke="url(#zone-imgVector347-paint0_linear_0_264)"/>
+     <defs>
+     <linearGradient id="zone-imgVector347-paint0_linear_0_264" x1="116.536" y1="147.525" x2="-20.6037" y2="88.3073" gradientUnits="userSpaceOnUse">
+     <stop offset="0.259615" stop-color="#006CF4"/>
+     <stop offset="1" stop-color="#5EC7F8"/>
+     </linearGradient>
+     </defs>
+    </svg><img class="zone-area-unselected" src="assets/zone-unselected-area.svg" alt=""></button>
+   <svg id="zoneWalkLine" class="zone-walk-line" viewBox="0 0 402 874" aria-hidden="true">
+    <line id="zoneWalkSegment" x1="167.5" y1="479" x2="322.5" y2="501"/>
+   </svg>
+   <button id="zoneMarker" type="button" class="zone-marker" aria-label="도보 3분 반납 가능 구역 선택" aria-describedby="zoneDragHelp" aria-pressed="false">
+    <span class="zone-choonsik"><img src="assets/zone-img202611041220501.png" alt=""></span>
+    <span class="zone-marker-caption"><b>도착</b><strong id="zoneWalkTime">도보 3분</strong></span>
+    <img class="zone-stem" src="assets/zone-imgStem.svg" alt="">
+    <span class="zone-invalid-pin" aria-hidden="true">
+     <img class="zone-invalid-mascot" src="assets/zone-unavailable-chunshik.png" alt="">
+     <strong>반납 불가능 지역</strong>
+     <img class="zone-stem" src="assets/zone-unavailable-stem.svg" alt="">
+    </span>
+   </button>
+   <span id="zoneDragHelp" class="zone-drag-help">도착 핀을 끌어서 확인하세요. 키보드로는 방향키로 이동할 수 있어요.</span>
+   <div class="zone-destination">
+    <img src="assets/destination-pin.svg" alt="">
+    <span id="zonePinLabel">단국대학교</span>
+   </div>
+   <button id="zoneLocate" class="entry-round zone-locate" aria-label="반납 가능 구역 다시 보기" type="button"><img src="assets/zone-imgIconLocate.svg" alt=""></button>
+   <div class="zone-sheet">
+    <span class="zone-handle" aria-hidden="true"></span>
+    <h2 id="zoneTitle" aria-live="polite">목적지 근처 반납가능 지역</h2>
+    <button id="findBike" class="btn primary" type="button">바이크 찾기</button>
+   </div>
+  </section>
+  <div id="pins" class="pins" aria-label="지도에 표시된 자전거">
+   <svg class="pickup-directions" viewBox="0 0 402 874" aria-hidden="true">
+    <defs>
+     <marker id="pickup-arrow" viewBox="0 0 12 12" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" refX="10" refY="6" orient="auto"><path d="M1 1L11 6 1 11 3 6Z" fill="#006cf4"/></marker>
+     <mask id="pickup-remaining-route" maskUnits="userSpaceOnUse" x="0" y="0" width="402" height="874">
+      <rect width="402" height="874" fill="white"/>
+      <path id="pickupMotionPath" pathLength="1" fill="none" stroke="black" stroke-width="16" stroke-linejoin="round" stroke-dasharray="0 1"/>
+     </mask>
+    </defs>
+    <g mask="url(#pickup-remaining-route)">
+     <path id="pickupHalo" class="pickup-halo"/>
+     <path id="pickupLine" class="pickup-line" marker-end="url(#pickup-arrow)"/>
+    </g>
+    <g id="pickupLocation" transform="translate(87 416)">
+     <circle class="pickup-location-halo" r="12"/>
+     <circle class="pickup-location" r="7"/>
+    </g>
+   </svg>
+   <div id="pickupDistance" class="pickup-distance" role="status"></div>
+  </div>
+  <div class="status" aria-hidden="true"><span>9:55</span><span>▮▮▮ &nbsp;▰</span></div>
+  <section id="picker" class="sheet picker">
+   <button id="sheetHandle" class="handle" aria-label="주변 바이크 목록 펼치기" aria-expanded="false"><i></i></button>
+   <header class="sheet-header"><h2 id="pickerTitle">반납 위치까지 갈 수 있는<br>내 근처 바이크</h2><img src="assets/home-imgImage97.png" alt=""></header>
+   <div id="cards" class="cards"></div>
+   <div id="nextBikes" class="next-bikes" aria-hidden="true" inert></div>
+   <footer class="actions"><button id="secondary" class="btn secondary"><img src="assets/pick-imgLeadingIcon.svg" alt=""><span>QR 스캔하기</span></button><button id="primary" class="btn primary">찜하기</button></footer>
+  </section>
+  <section class="ride-ui" aria-label="주행 화면">
+   <div class="ride-warning-filter" aria-hidden="true"></div>
+   <div class="dark-ride-status" aria-hidden="true"><span>8:43</span><span><img src="assets/exactdone-imgSignal.svg" alt=""><img src="assets/exactdone-imgBattery.svg" alt=""></span></div>
+   <div id="rideCards" class="ride-cards" data-card="navigation" aria-label="주행 중 상단 카드" hidden>
+   <header id="nav" class="nav" data-warning="false"><div class="nav-fill"></div>
+    <img class="nav-stars" src="assets/banner-dark-stars.svg" alt="">
+    <div class="nav-copy"><div class="distance" id="navManeuver" role="img" aria-label="80m 앞 좌회전">
+    <img class="turn-gradient" src="assets/ride-imgUnion.svg" alt="">
+    <img class="turn-light" src="assets/banner-light-turn.svg" alt="">
+    <img class="turn-dark" src="assets/banner-dark-turn.svg" alt="">
+    <svg class="turn-straight" viewBox="0 0 48 48" aria-hidden="true"><path d="M24 40V8m-12 12L24 8l12 12" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <strong id="distance">80</strong><small>m</small></div><span id="navLabel">12:23 도착 예정</span></div><div class="meter" id="rideMeter" role="timer" aria-label="이용 시간 0분 0초">
+     <svg class="meter-ring" viewBox="0 0 100 100" aria-hidden="true"><circle class="meter-track" cx="50" cy="50" r="45"/><circle class="meter-progress" id="meterProgress" cx="50" cy="50" r="45" pathLength="60" stroke-dasharray="0 60"/></svg>
+     <b id="meterText">0분</b><small id="meterPrice">0원</small>
+    </div></header>
+    <section id="rideBikeCard" class="ride-bike-card" aria-label="이용 중인 바이크 정보" aria-hidden="true" inert>
+     <div class="ride-bike-brand">
+      <svg viewBox="0 0 18 16" aria-hidden="true"><path d="M2 2h14M2 6h14m-7 0v8" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <b>카카오 T 바이크</b>
+     </div>
+     <div class="ride-bike-content">
+      <div class="ride-bike-summary"><strong id="rideBikeNumber">NN4815</strong><span class="ride-bike-separator" aria-hidden="true"></span><svg viewBox="0 0 12 18" role="img" aria-label="배터리" fill="currentColor"><rect x="3.5" y="0.5" width="5" height="2" rx="1"/><rect x="1" y="3.5" width="10" height="4" rx="1"/><rect x="1" y="8.5" width="10" height="4" rx="1"/><rect x="1" y="13.5" width="10" height="4" rx="1"/></svg><span id="rideBikeBattery">190분</span></div>
+      <div class="ride-bike-pricing"><span id="rideBikePrice">잠금해제 무료 + 분당 200원</span><button id="rideBikeFareHelp" type="button" aria-label="바이크 요금 안내">?</button></div>
+      <button id="rideBikeHelp" type="button" aria-label="바이크 문제 안내">!</button>
+     </div>
+    </section>
+    <div class="ride-card-switcher" role="group" aria-label="주행 카드 전환">
+     <button id="showNavigationCard" type="button" aria-label="길안내 카드 보기" aria-pressed="true"></button>
+     <button id="showRideBikeCard" type="button" aria-label="바이크 정보 카드 보기" aria-pressed="false"></button>
+    </div>
+   </div>
+   <div class="siren"><img src="assets/ride-imgIconSiren.svg" alt="">긴급상황</div>
+   <div id="rail" class="rail" aria-hidden="true"><img id="railRider" src="assets/rider-chunshik-v3.png" alt=""></div>
+   <section id="arrival" class="arrival" hidden><div class="arrival-title"><h2>도착 완료</h2><div><b id="arrivalFare">요금 0원</b><br><small id="arrivalTime">0분 이용</small></div></div><details open><summary>이런 곳엔 주차할 수 없어요</summary><p>해당 구역에 주차 후 적발 시<br>견인, 보관료 및 과태료가 부과될 수 있어요</p><div id="parking" class="parking"></div></details></section>
+   <footer class="sheet ride-footer"><div class="route-chip">코리어학원 <span>›</span> <span id="rideDestination">단국대학교</span> <b class="route-swap">⇄</b></div><div class="actions"><button id="pause" class="btn secondary">ⓘ 일시정지</button><button id="end" class="btn primary">이용 종료</button></div></footer>
+  </section>
+  <dialog id="penalty" aria-labelledby="penaltyTitle">
+   <div class="penalty">
+    <span class="penalty-handle" aria-hidden="true"></span>
+    <div class="penalty-mascot"><img src="assets/penalty-chunshik.png" alt=""></div>
+    <h2 id="penaltyTitle">서비스 외 지역</h2>
+    <strong>과태료 20,000원</strong>
+    <p>이 위치에서 반납하면 과태료가 부과돼요.<br>가까운 반납 가능 구역은 120m 앞이에요.</p>
+    <div class="actions"><button id="continue" class="btn secondary">계속 이용하기</button><button id="reroute" class="btn primary">반납 구역까지 길 안내</button></div>
+    <button id="acceptFee" class="link">과태료 내고 종료하기</button>
+    <span class="penalty-home" aria-hidden="true"></span>
+   </div>
+  </dialog>
+  <section id="overlay" class="screen" hidden></section>
+  <div class="home-indicator" aria-hidden="true"></div>
+  <div id="toast" role="status" aria-live="polite" class="toast"></div>
+ </article></div>
+</div></div>
+</main><script src="app.js?v=screen-warning"></script><script type="module" src="ride-background.js?v=screen-warning"></script>
+</body></html>

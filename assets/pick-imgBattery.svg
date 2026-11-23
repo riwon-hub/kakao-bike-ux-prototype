@@ -1,0 +1,13 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="22" height="4" viewBox="0 0 22 4" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Battery" clip-path="url(#clip0_0_180)">
+<circle id="Ellipse" cx="2" cy="2" r="2" fill="#006CF4"/>
+<circle id="Ellipse_2" cx="8" cy="2" r="2" fill="#006CF4"/>
+<circle id="Ellipse_3" cx="14" cy="2" r="2" fill="#006CF4"/>
+<circle id="Ellipse_4" cx="20" cy="2" r="2" fill="#D6D9DD"/>
+</g>
+<defs>
+<clipPath id="clip0_0_180">
+<rect width="22" height="4" fill="white"/>
+</clipPath>
+</defs>
+</svg>

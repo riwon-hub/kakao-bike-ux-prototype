@@ -1,0 +1,13 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="04_bus-taxi-stop 1">
+<path id="Vector" d="M11.7222 5H36.2778C38.8858 5 41 7.39847 41 10.3571V29.6429C41 32.6015 38.8858 35 36.2778 35H11.7222C9.11421 35 7 32.6015 7 29.6429V10.3571C7 7.39847 9.11421 5 11.7222 5Z" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke="#2B3440"/>
+<path id="Vector_2" d="M17 11H31C32.6569 11 34 12.511 34 14.375V25.625C34 27.489 32.6569 29 31 29H17C15.3431 29 14 27.489 14 25.625V14.375C14 12.511 15.3431 11 17 11Z" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke="#2B3440"/>
+<path id="Vector_3" d="M14 19H34" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke="#2B3440"/>
+<g id="Frame 257">
+<path id="Vector_4" d="M19.5 25C20.3284 25 21 24.3284 21 23.5C21 22.6716 20.3284 22 19.5 22C18.6716 22 18 22.6716 18 23.5C18 24.3284 18.6716 25 19.5 25Z" fill="#FF9500"/>
+<path id="Vector_5" d="M28.5 25C29.3284 25 30 24.3284 30 23.5C30 22.6716 29.3284 22 28.5 22C27.6716 22 27 22.6716 27 23.5C27 24.3284 27.6716 25 28.5 25Z" fill="#FF9500"/>
+</g>
+<path id="Vector_6" d="M24 35V43" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke="#2B3440"/>
+<path id="Vector_7" d="M17 43H31" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" stroke="#2B3440"/>
+</g>
+</svg>
