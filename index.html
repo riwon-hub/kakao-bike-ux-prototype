@@ -14,13 +14,11 @@
  <svg class="ride-cockpit" viewBox="0 0 1392 1044" preserveAspectRatio="none" aria-hidden="true">
   <defs><mask id="cockpitMask" maskUnits="userSpaceOnUse" x="0" y="0" width="1392" height="1044">
 
-   <path fill="white" d="M600 167H789Q842 167 846 223L847 389Q870 391 869 419L869 477Q867 502 848 503L849 686Q847 745 790 746H601Q543 745 543 687V505Q525 504 526 479V416Q527 393 545 392V223Q546 167 600 167Z"/>
    <path fill="white" d="M0 665Q25 651 47 650Q69 633 99 645Q133 633 159 653L181 689Q194 729 188 772Q183 813 151 841L163 884Q174 948 119 1044H0Z"/>
    <path fill="white" d="M1392 660Q1350 647 1328 650Q1300 631 1276 647Q1248 639 1227 658L1209 699Q1194 739 1202 781L1237 838Q1226 892 1247 955L1272 1044H1392Z"/>
    <path fill="white" d="M155 659L208 653L221 683Q269 674 312 689Q359 691 416 723Q473 755 544 761H597V737H758L764 761Q835 766 906 729Q970 691 1028 683Q1096 675 1177 698L1185 661L1234 675L1208 831L1160 819L1168 779Q1080 746 1028 764Q973 786 936 809Q868 844 767 840L754 894H615L595 840Q502 843 439 817Q399 801 358 774Q303 743 245 759L242 809L192 830Z"/>
    <path fill="white" d="M634 744H754L776 939Q790 974 810 999L825 1044H607L619 982Q641 967 643 936Z"/>
    <g fill="white">
-    <path d="M599 166H787Q845 168 845 226V392Q870 388 870 416V477Q870 503 847 502V685Q847 740 798 746H757V786H632V746H594Q541 742 541 688V503Q525 502 525 481V415Q525 393 547 393V224Q547 170 599 166Z"/>
     <path d="M0 657Q16 646 41 649Q61 639 82 644Q107 635 130 649Q147 643 172 654L204 654L226 686Q291 679 340 693Q382 707 420 731Q462 759 501 766L592 773H800L878 765Q924 753 971 721Q1018 690 1073 688L1169 693L1180 657L1214 653Q1230 639 1255 643Q1284 635 1302 649Q1334 637 1359 649Q1380 645 1392 659V1044H1298Q1301 960 1258 893Q1238 862 1237 824L1170 813L1158 761L1085 759Q1041 758 1006 782Q950 820 895 827L803 840L791 864H599L585 838L493 832Q439 827 395 803L344 771Q307 749 254 757L245 805L182 825Q184 866 161 919Q139 976 144 1044H0Z"/>
     <path d="M628 783H756L767 913L798 988L800 1044H598L605 992L626 942Z"/>
    </g>
@@ -31,6 +29,31 @@
    </g>
   </mask></defs>
   <image href="assets/ride-pov.jpg" width="1392" height="1044" mask="url(#cockpitMask)"/>
+  <!-- iPhone 17 Pro 목업: 화면 x 565–829, y 165.5–739.5 (402:874) -->
+  <defs>
+   <linearGradient id="iphoneFrame" x1="0" x2="1" y1="0" y2="0">
+    <stop offset="0" stop-color="#8c96a3"/><stop offset=".035" stop-color="#3d4652"/><stop offset=".5" stop-color="#2a313a"/><stop offset=".965" stop-color="#1b2027"/><stop offset="1" stop-color="#4b5560"/>
+   </linearGradient>
+   <linearGradient id="iphoneButton" x1="0" x2="1"><stop offset="0" stop-color="#596370"/><stop offset="1" stop-color="#262c33"/></linearGradient>
+   <linearGradient id="holderGrip" x1="0" x2="1"><stop offset="0" stop-color="#3a3e43"/><stop offset=".45" stop-color="#1f2225"/><stop offset="1" stop-color="#111315"/></linearGradient>
+   <linearGradient id="holderGripRight" x1="0" x2="1"><stop offset="0" stop-color="#111315"/><stop offset=".55" stop-color="#1f2225"/><stop offset="1" stop-color="#2b2f33"/></linearGradient>
+  </defs>
+  <g class="iphone-mockup">
+   <rect x="553.5" y="250" width="4" height="26" rx="2" fill="url(#iphoneButton)"/>
+   <rect x="553.5" y="298" width="4" height="44" rx="2" fill="url(#iphoneButton)"/>
+   <rect x="553.5" y="352" width="4" height="44" rx="2" fill="url(#iphoneButton)"/>
+   <rect x="836.5" y="308" width="4" height="64" rx="2" fill="url(#iphoneButton)"/>
+   <rect x="836.5" y="540" width="4" height="40" rx="2" fill="url(#iphoneButton)"/>
+   <rect x="556" y="156.5" width="282" height="592" rx="47" fill="url(#iphoneFrame)"/>
+   <rect x="557.2" y="157.7" width="279.6" height="589.6" rx="45.8" fill="none" stroke="#ffffff" stroke-opacity=".16" stroke-width="1"/>
+   <rect x="559.5" y="160" width="275" height="585" rx="42.5" fill="#050607"/>
+   <rect x="565" y="165.5" width="264" height="574" rx="36" fill="#000"/>
+   <rect x="537" y="398" width="25" height="118" rx="7" fill="url(#holderGrip)"/>
+   <rect x="556" y="404" width="6" height="106" rx="3" fill="#0b0c0d"/>
+   <rect x="540" y="402" width="2.2" height="110" rx="1.1" fill="#ffffff" fill-opacity=".14"/>
+   <rect x="832" y="398" width="25" height="118" rx="7" fill="url(#holderGripRight)"/>
+   <rect x="832" y="404" width="6" height="106" rx="3" fill="#0b0c0d"/>
+  </g>
  </svg>
  <div class="device-screen">
  <div class="viewport" id="viewport"><article id="phone" class="phone" data-theme="purple" data-stage="home" aria-label="카카오 T 바이크 모바일 화면">
