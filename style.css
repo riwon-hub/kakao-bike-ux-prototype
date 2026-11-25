@@ -643,3 +643,7 @@ dialog{position:fixed;inset:auto;left:var(--dialog-left,10px);bottom:var(--dialo
 @media(prefers-reduced-motion:reduce){
  .phone[data-stage=ride][data-warning-style=screen][data-warning=true] .ride-warning-filter{animation:none;opacity:.26}
 }
+
+/* 보라색 그라데이션 테마: 주행 카드에서 이용 시간(미터)을 왼쪽, 방향·거리를 오른쪽에 배치 */
+.phone[data-theme=purple] .meter{left:18px;right:auto}
+.phone[data-theme=purple] .nav-copy{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;text-align:right}
