@@ -647,3 +647,11 @@ dialog{position:fixed;inset:auto;left:var(--dialog-left,10px);bottom:var(--dialo
 /* 보라색 그라데이션 테마: 주행 카드에서 이용 시간(미터)을 왼쪽, 방향·거리를 오른쪽에 배치 */
 .phone[data-theme=purple] .meter{left:18px;right:auto}
 .phone[data-theme=purple] .nav-copy{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;text-align:right}
+
+/* 거치대 휴대폰을 뒤로 살짝 젖힘: 폰 아랫부분(거치대 연결부)을 축으로 회전 */
+@media(min-width:701px){
+ .device{--phone-tilt:12deg;--phone-perspective:calc(var(--H) * 1.5)}
+ .iphone-layer,.device-screen{transform:perspective(var(--phone-perspective)) rotateX(var(--phone-tilt))}
+ .iphone-layer{z-index:1;transform-origin:calc(697 / 1392 * 100%) calc(748.5 / 1044 * 100%)}
+ .device-screen{transform-origin:50% calc(583 / 574 * 100%)}
+}
