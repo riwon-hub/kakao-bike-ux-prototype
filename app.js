@@ -437,7 +437,7 @@ function paintRideTime() {
   const minutes=rideMinutes();
   const label='이용 시간 '+minutes+'분 '+Math.floor(withinMinute)+'초';
   if(rideMeter.getAttribute('aria-label')===label) return;
-  meterText.textContent=minutes+'분';
+  meterText.textContent=Math.max(1,minutes)+'분';
   meterPrice.textContent=currency(rideFare());
   rideMeter.setAttribute('aria-label',label);
 }
