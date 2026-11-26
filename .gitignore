@@ -8,3 +8,5 @@ node_modules/
 .vscode/
 .idea/
 __pycache__/
+
+_site/

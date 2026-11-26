@@ -55,8 +55,10 @@ node --check app.js
 node --input-type=module --check < ride-background.js
 ```
 
-GitHub에 반영한 변경은 현재 공유 사이트에 자동 배포되지 않습니다. GitHub 저장소는 공동 편집용 원본이며, 공유 사이트에 반영하려면 별도 배포가 필요합니다.
+`main`에 반영한 변경은 [GitHub Pages 공유 사이트](https://riwon-hub.github.io/kakao-bike-ux-prototype/)에 자동 배포됩니다. 기존 `chatgpt.site` 주소는 별도로 유지되며 자동으로 업데이트되지 않습니다.
 
 ## 에셋
 
 카카오·춘식이 및 Figma 기반 에셋은 원본의 권리와 사용 조건을 따릅니다. Three.js 라이선스는 `assets/three-LICENSE.txt`에 보존되어 있습니다. 이 저장소는 리디자인 과제의 프로토타입이며 실제 위치 추적·QR 인증·결제를 연동하지 않습니다.
+
+팀원용 자동 배포 및 수동 재배포 방법은 [DEPLOYMENT.md](DEPLOYMENT.md)에 정리되어 있습니다.
