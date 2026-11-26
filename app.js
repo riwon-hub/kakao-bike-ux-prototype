@@ -285,9 +285,7 @@ function start() {
   endRideCardGesture();
   showRideCard('navigation');
   rideCardWheel={delta:0,time:0,handled:false};
-  const scenario=byId('scenario').value;
-  phone.dataset.warningStyle=scenario==='restricted-filter'?'screen':'banner';
-  state.deviating=scenario==='restricted'||scenario==='restricted-filter';
+  state.deviating=byId('scenario').value==='restricted';
   state.recovering=false;
   setRoute(normalRoute);
   state.elapsed=0;
@@ -702,18 +700,13 @@ const parking=[
  ['BrailleBlock','점자 보도 블록'],['SubwayEntrance','지하철 역 입구'],['Crosswalk','횡단보도 앞'],['BusTaxiStop','버스·택시 정류장'],['Road','도로 및 차도'],['Elevator','교통약자 엘리베이터']
 ];
 parking.forEach(([name,label],i)=>byId('parking').insertAdjacentHTML('beforeend','<span><img src="'+embeddedImages['arrival-img0'+(i+1)+name+'1.svg']+'" alt="">'+label+'</span>'));
-function setTheme(theme) {
-  phone.dataset.theme=theme;
-  dialog.dataset.theme=theme;
-  visibleRestrictedBlocks=restrictedBlocks.filter(block=>getComputedStyle(block).display!=='none');
-  if(state.stage==='zone') moveReturnPin(returnPin,zoneMarker.getAttribute('aria-pressed')==='true');
-}
-byId('theme').onchange=e=>setTheme(e.target.value);
 const viewport=byId('viewport');
 new ResizeObserver(([entry])=>{
   phone.style.setProperty('--screen-scale',String(entry.contentRect.width/402));
 }).observe(viewport);
-setTheme(byId('theme').value);
+phone.dataset.theme='purple';
+dialog.dataset.theme='purple';
+visibleRestrictedBlocks=restrictedBlocks.filter(block=>getComputedStyle(block).display!=='none');
 byId('reset').onclick=reset;
 const handle=byId('sheetHandle');
 handle.onclick=()=>{if(!dragHandled){state.expanded=!state.expanded;updatePicker();}dragHandled=false;};

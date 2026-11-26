@@ -1,10 +1,9 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>카카오 T 바이크 UX 프로토타입</title><link rel="stylesheet" href="style.css?v=arrival-reference"></head>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>카카오 T 바이크 UX 프로토타입</title><link rel="stylesheet" href="style.css?v=purple-final"></head>
 <body><main class="demo">
  <aside class="controls" aria-label="테스트 설정">
   <div class="brand"><span>T</span> 카카오 T 바이크</div>
   <h1>바이크 이용 체험</h1>
-  <label for="theme">화면 스타일</label><select id="theme"><option value="purple">보라색 그라데이션</option><option value="light">라이트</option><option value="dark">다크</option><option value="blue">유사색 그라데이션</option></select>
-  <label for="scenario">주행 시나리오</label><select id="scenario"><option value="normal">정상 주행</option><option value="restricted">서비스 불가 구역 · 상단 경고</option><option value="restricted-filter">서비스 불가 구역 · 화면 필터</option></select>
+  <label for="scenario">주행 시나리오</label><select id="scenario"><option value="normal">정상 주행</option><option value="restricted">서비스 불가 구역 · 상단 경고</option></select>
   <p id="hint">목적지를 검색하고 반납할 지역과 바이크를 골라 보세요.</p>
   <button class="reset" id="reset" type="button">처음부터 다시</button>
  </aside>
@@ -350,7 +349,6 @@
    <footer class="actions"><button id="secondary" class="btn secondary"><img src="assets/pick-imgLeadingIcon.svg" alt=""><span>QR 스캔하기</span></button><button id="primary" class="btn primary">찜하기</button></footer>
   </section>
   <section class="ride-ui" aria-label="주행 화면">
-   <div class="ride-warning-filter" aria-hidden="true"></div>
    <div class="dark-ride-status" aria-hidden="true"><span>8:43</span><span><img src="assets/exactdone-imgSignal.svg" alt=""><img src="assets/exactdone-imgBattery.svg" alt=""></span></div>
    <div id="rideCards" class="ride-cards" data-card="navigation" aria-label="주행 중 상단 카드" hidden>
    <header id="nav" class="nav" data-warning="false"><div class="nav-fill"></div>
@@ -478,5 +476,5 @@
   <div id="toast" role="status" aria-live="polite" class="toast"></div>
  </article></div>
 </div></div>
-</main><script src="app.js?v=arrival-reference"></script><script type="module" src="ride-background.js?v=arrival-reference"></script>
+</main><script src="app.js?v=purple-final"></script><script type="module" src="ride-background.js?v=purple-final"></script>
 </body></html>

@@ -633,17 +633,6 @@ dialog{position:fixed;inset:auto;left:var(--dialog-left,10px);bottom:var(--dialo
 }
 @media(prefers-reduced-motion:reduce){.device{will-change:auto}}
 
-/* Additional warning scenario: tint the map while cards and controls stay clear. */
-.ride-warning-filter{position:absolute;inset:0;z-index:1;background:#ef3734;opacity:0;pointer-events:none}
-.phone[data-stage=ride][data-warning-style=screen][data-warning=true] .ride-warning-filter{
- animation:screen-warning-blink .65s step-end infinite;
-}
-.phone[data-warning-style=screen] .siren{z-index:2}
-@keyframes screen-warning-blink{0%,100%{opacity:.36}69.230769%{opacity:.10}}
-@media(prefers-reduced-motion:reduce){
- .phone[data-stage=ride][data-warning-style=screen][data-warning=true] .ride-warning-filter{animation:none;opacity:.26}
-}
-
 /* 보라색 그라데이션 테마: 주행 카드에서 이용 시간(미터)을 왼쪽, 방향·거리를 오른쪽에 배치 */
 .phone[data-theme=purple] .meter{left:18px;right:auto}
 .phone[data-theme=purple] .nav-copy{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;text-align:right}
@@ -698,3 +687,6 @@ dialog{position:fixed;inset:auto;left:var(--dialog-left,10px);bottom:var(--dialo
 .phone[data-theme=blue] .arrival{--arrival-gradient-start:#1712b9;--arrival-gradient-end:#0e6aff}
 .phone[data-theme=dark] .arrival{--arrival-gradient-start:#1224b1;--arrival-gradient-end:#2e8bff;--arrival-paper:#111a2b;--arrival-muted:#b9c4d8;--arrival-icon:#fff;--arrival-icon-accent:#fff;--arrival-divider:#37445a}
 .phone[data-theme=dark] .arrival-reference-stars{display:block}
+
+/* The final prototype has one theme and two ride scenarios. */
+@media(max-width:700px){.controls{grid-template-columns:1fr}}
