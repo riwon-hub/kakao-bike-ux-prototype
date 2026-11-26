@@ -1,0 +1,216 @@
+/* 테스트 진행 흐름: 안내 슬라이드 → 프로토타입 → 사후 설문
+ * - 슬라이드: 화면 아무 곳이나 터치하면 다음, 왼쪽 가장자리 터치(또는 ←)는 이전. 마지막 장 다음은 프로토타입.
+ * - 프로토타입에서 반납 완료(done)가 되면 「설문하기」 버튼이 나타나고, 진행자는 왼쪽 패널에서 언제든 설문을 열 수 있음.
+ * - 응답은 이 기기 브라우저(localStorage)에 쌓이고, 패널의 「설문 응답 CSV」로 내려받음.
+ */
+(() => {
+  // 안내 슬라이드 이미지 (순서대로). 비어 있으면 슬라이드 없이 바로 프로토타입이 시작됨.
+  const SLIDES = window.INTRO_SLIDES || [];
+  const STORE_KEY = 'kakaoBikeSurveyResponses';
+
+  const LIKERT_SECTIONS = [
+    ['A', '이해도', [
+      'A1. 이 화면이 어떤 상황(시간에 쫓겨 반납 구역을 찾아 반납할 때)에서 쓰이는지 이해했다.',
+      'A2. 각 화면에서 다음에 무엇을 해야 하는지 알 수 있었다.',
+      'A3. 목적지 핀의 역할이 무엇인지 바로 알 수 있었다.',
+      'A4. 길안내 카드가 빨갛게 바뀐 이유를 바로 알 수 있었다.'
+    ]],
+    ['B', '디자인', [
+      'B1. 반납 가능 구역과 아닌 구역이 명확하게 구분되어 보였다.',
+      'B2. 이용 중 화면의 타이머, 안내, 도착 예정 시각, 요금이 한눈에 들어왔다.',
+      'B3. 상단바의 크기와 위치가 정보를 확인하기에 적절했다.',
+      'B4. 서비스 불가 구역 경고가 눈에 잘 띄었다.',
+      'B5. 화면이 복잡하지 않고 필요한 정보만 보였다.'
+    ]],
+    ['C', '사용성', [
+      'C1. 과업을 완료하는 데 어려움이 없었다.',
+      'C2. 목적지 입력부터 대여까지 조작 과정이 단순했다.',
+      'C3. 반납 구역을 확인하는 과정에 어려움이 없었다.',
+      'C4. 선택한 반납 구역으로 길안내가 설정되었다는 것을 확인할 수 있었다.',
+      'C5. 반납 구역을 잘못 알고 반납할 가능성이 낮다고 느꼈다.'
+    ]],
+    ['D', '상황적 제약', [
+      'D1. 화면을 확인하는 데 드는 시간이 부담스럽지 않았다.',
+      'D2. 정보를 확인하려고 화면을 오래 보거나 여러 번 다시 볼 필요가 적었다.',
+      'D3. 신호 대기 등 멈춰 있는 동안 짧게 확인하는 방식으로 사용할 수 있을 것 같다.',
+      'D4. 시간이 급한 상황(수업 지각 등)에서도 반납 구역을 빠르게 확인할 수 있을 것 같다.',
+      'D5. 실제로 자전거를 타면서도 쓸 수 있을 것 같다.',
+      'D6. 음성·진동 안내만으로 화면을 보지 않고도 길을 따라갈 수 있을 것 같다.'
+    ]]
+  ];
+  const BASIC = [
+    ['frequency', '카카오 T 바이크 이용 빈도', ['주 3회 이상', '주 1~2회', '월 1~3회', '월 1회 미만']],
+    ['fare_uncertainty', '예상 요금을 알 수 없어서 카카오 T 바이크 이용을 망설이거나 다른 이동 수단을 고른 적이 있나요?', ['자주 있다', '가끔 있다', '거의 없다', '전혀 없다']]
+  ];
+  const LIKERT_IDS = LIKERT_SECTIONS.flatMap(([, , items]) => items.map(text => text.split('.')[0]));
+  const REQUIRED = [...BASIC.map(([id]) => id), ...LIKERT_IDS];
+
+  const phone = document.getElementById('phone');
+  const scenario = document.getElementById('scenario');
+  const controls = document.querySelector('.controls');
+  let prototypeStartedAt = Date.now();
+
+  /* ---------- 안내 슬라이드 ---------- */
+  function showIntro() {
+    if (!SLIDES.length) return;
+    let index = 0;
+    const deck = document.createElement('div');
+    deck.className = 'intro-deck';
+    deck.setAttribute('role', 'dialog');
+    deck.setAttribute('aria-label', '테스트 안내');
+    deck.innerHTML = `<img alt=""><div class="intro-prev" aria-label="이전 장"></div>
+      <div class="intro-hint"><span class="intro-dots">${SLIDES.map(() => '<i></i>').join('')}</span><span class="intro-label"></span></div>`;
+    document.body.append(deck);
+    // 미리 불러와서 넘길 때 깜빡이지 않게
+    SLIDES.forEach(src => { const img = new Image(); img.src = src; });
+    const paint = () => {
+      deck.querySelector('img').src = SLIDES[index];
+      deck.querySelectorAll('.intro-dots i').forEach((dot, i) => dot.classList.toggle('on', i === index));
+      deck.querySelector('.intro-label').textContent = index === SLIDES.length - 1 ? '터치하면 프로토타입을 시작해요' : '터치하면 다음 장으로';
+    };
+    const close = () => {
+      deck.remove();
+      document.removeEventListener('keydown', onKey);
+      prototypeStartedAt = Date.now();
+    };
+    const next = () => { if (index < SLIDES.length - 1) { index++; paint(); } else close(); };
+    const prev = () => { if (index > 0) { index--; paint(); } };
+    const onKey = event => {
+      if (['ArrowRight', ' ', 'Enter', 'PageDown'].includes(event.key)) { event.preventDefault(); next(); }
+      if (['ArrowLeft', 'PageUp'].includes(event.key)) { event.preventDefault(); prev(); }
+    };
+    deck.addEventListener('click', event => (event.target.classList.contains('intro-prev') ? prev() : next()));
+    document.addEventListener('keydown', onKey);
+    paint();
+  }
+
+  /* ---------- 설문으로 넘어가기 ---------- */
+  let cta;
+  function showCta() {
+    if (cta || document.querySelector('.survey')) return;
+    cta = document.createElement('div');
+    cta.className = 'survey-cta';
+    cta.innerHTML = '<span>체험을 마쳤어요. 이제 짧은 설문에 답해 주세요.</span><button type="button">설문하기</button>';
+    cta.querySelector('button').onclick = openSurvey;
+    document.body.append(cta);
+  }
+  function hideCta() { cta?.remove(); cta = null; }
+  new MutationObserver(() => {
+    if (phone.dataset.stage === 'done') setTimeout(() => phone.dataset.stage === 'done' && showCta(), 1200);
+    else hideCta();
+  }).observe(phone, { attributes: true, attributeFilter: ['data-stage'] });
+
+  /* ---------- 설문 ---------- */
+  const esc = text => text.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  function choiceGroup(name, options, cls = '') {
+    return `<div class="choices ${cls}" role="radiogroup">${options.map(([value, label]) =>
+      `<label><input type="radio" name="${name}" value="${esc(value)}"><span>${esc(label)}</span></label>`).join('')}</div>`;
+  }
+  function openSurvey() {
+    hideCta();
+    if (document.querySelector('.survey')) return;
+    const minutes = ((Date.now() - prototypeStartedAt) / 60000).toFixed(1);
+    const root = document.createElement('div');
+    root.className = 'survey';
+    root.innerHTML = `
+      <div class="survey-progress"><div class="bar"><i></i></div><b class="count"></b></div>
+      <form class="survey-body" novalidate>
+        <h1>사용성 테스트 후 설문지</h1>
+        <p class="survey-lead">방금 체험한 프로토타입에 대해 느낀 대로 답해 주세요. 정답은 없어요.</p>
+        <p class="survey-scale">A~D 문항: 1 전혀 그렇지 않다 · 2 그렇지 않다 · 3 보통이다 · 4 그렇다 · 5 매우 그렇다</p>
+        <section><h2>기본 질문</h2>${BASIC.map(([id, title, options]) => `
+          <div class="q" data-q="${id}"><p class="q-title">${esc(title)}</p>${choiceGroup(id, options.map(o => [o, o]))}</div>`).join('')}
+        </section>
+        ${LIKERT_SECTIONS.map(([letter, title, items]) => `<section><h2>${letter}. ${title}</h2>${items.map(text => {
+          const id = text.split('.')[0];
+          return `<div class="q" data-q="${id}"><p class="q-title"><small>${id}</small>${esc(text.slice(id.length + 2))}</p>
+            ${choiceGroup(id, [1, 2, 3, 4, 5].map(n => [String(n), String(n)]), 'likert')}
+            <div class="likert-ends"><span>전혀 그렇지 않다</span><span>매우 그렇다</span></div></div>`;
+        }).join('')}</section>`).join('')}
+        <section><h2>E. 개방형</h2>
+          <div class="q" data-q="E1"><p class="q-title"><small>E1</small>가장 불편하거나 이해하기 어려웠던 부분은 무엇이었나요? 이유도 함께 적어주세요.</p>
+          <textarea name="E1" placeholder="자유롭게 적어 주세요 (선택)"></textarea></div>
+        </section>
+        <div class="survey-submit"><button type="submit" aria-disabled="true">제출하기</button></div>
+      </form>`;
+    document.body.append(root);
+    const form = root.querySelector('form');
+    const update = () => {
+      const data = new FormData(form);
+      const done = REQUIRED.filter(id => data.get(id)).length;
+      root.querySelector('.bar i').style.width = done / REQUIRED.length * 100 + '%';
+      root.querySelector('.count').textContent = `${done} / ${REQUIRED.length}`;
+      root.querySelector('.survey-submit button').setAttribute('aria-disabled', String(done < REQUIRED.length));
+      for (const id of REQUIRED) if (data.get(id)) form.querySelector(`[data-q="${id}"]`).classList.remove('missing');
+    };
+    form.addEventListener('change', update);
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const data = new FormData(form);
+      const missing = REQUIRED.filter(id => !data.get(id));
+      if (missing.length) {
+        missing.forEach(id => form.querySelector(`[data-q="${id}"]`).classList.add('missing'));
+        form.querySelector(`[data-q="${missing[0]}"]`).scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+      }
+      const response = {
+        submitted_at: new Date().toISOString(),
+        scenario: scenario ? scenario.options[scenario.selectedIndex].text : '',
+        prototype_minutes: minutes
+      };
+      for (const id of [...REQUIRED, 'E1']) response[id] = (data.get(id) || '').toString().trim();
+      const all = readAll();
+      all.push(response);
+      localStorage.setItem(STORE_KEY, JSON.stringify(all));
+      paintExportCount();
+      showThanks(root, all.length);
+    });
+    update();
+    root.scrollTop = 0;
+  }
+  function showThanks(root, count) {
+    root.innerHTML = `<div class="survey-done"><div>
+      <h1>참여해 주셔서 감사합니다!</h1>
+      <p>응답이 저장되었어요. 진행자에게 기기를 돌려주세요.</p>
+      <div class="row"><button class="primary" type="button" data-act="next">다음 참여자 시작</button>
+      <button type="button" data-act="csv">응답 CSV 내려받기 (${count}건)</button></div></div></div>`;
+    root.querySelector('[data-act="next"]').onclick = () => location.reload();
+    root.querySelector('[data-act="csv"]').onclick = downloadCsv;
+  }
+
+  /* ---------- 응답 내보내기 ---------- */
+  function readAll() {
+    try { return JSON.parse(localStorage.getItem(STORE_KEY) || '[]'); } catch { return []; }
+  }
+  function downloadCsv() {
+    const rows = readAll();
+    const headers = ['submitted_at', 'scenario', 'prototype_minutes', ...REQUIRED, 'E1'];
+    const cell = value => `"${String(value ?? '').replace(/"/g, '""')}"`;
+    const csv = '﻿' + [headers.join(','), ...rows.map(r => headers.map(h => cell(r[h])).join(','))].join('\n');
+    const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `kakao-bike-survey_${new Date().toISOString().slice(0, 10)}_${rows.length}건.csv`;
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  /* ---------- 진행자용 버튼 (왼쪽 테스트 설정 패널) ---------- */
+  let exportButton;
+  function paintExportCount() { if (exportButton) exportButton.textContent = `설문 응답 CSV (${readAll().length}건)`; }
+  if (controls) {
+    const open = document.createElement('button');
+    open.type = 'button';
+    open.className = 'reset survey-open';
+    open.textContent = '설문으로 이동';
+    open.onclick = openSurvey;
+    exportButton = document.createElement('button');
+    exportButton.type = 'button';
+    exportButton.className = 'reset survey-open';
+    exportButton.onclick = downloadCsv;
+    controls.append(open, exportButton);
+    paintExportCount();
+  }
+
+  showIntro();
+})();
