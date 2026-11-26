@@ -2,6 +2,7 @@
  * - 슬라이드: 화면 아무 곳이나 터치하면 다음, 왼쪽 가장자리 터치(또는 ←)는 이전. 마지막 장 다음은 프로토타입.
  * - 프로토타입에서 반납 완료(done)가 되면 「설문하기」 버튼이 나타나고, 진행자는 왼쪽 패널에서 언제든 설문을 열 수 있음.
  * - 응답은 이 기기 브라우저(localStorage)에 쌓이고, 패널의 「설문 응답 CSV」로 내려받음.
+ * - 시작할 때 참여자 이름(닉네임)을 받고, 오른쪽 위 단계 버튼으로 슬라이드·프로토타입·설문을 오갈 수 있음.
  */
 (() => {
   // 안내 슬라이드 이미지 (순서대로). 비어 있으면 슬라이드 없이 바로 프로토타입이 시작됨.
@@ -48,12 +49,42 @@
   const phone = document.getElementById('phone');
   const scenario = document.getElementById('scenario');
   const controls = document.querySelector('.controls');
-  let prototypeStartedAt = Date.now();
+  let prototypeStartedAt = 0;
+  let participant = '';
+  let lastSlide = 0;
+  let closeDeck = null;
+
+  /* ---------- 참여자 이름 ---------- */
+  function askName(then) {
+    const box = document.createElement('div');
+    box.className = 'flow-start';
+    box.innerHTML = `<form class="flow-start-card" novalidate>
+      <h1>사용성 테스트를 시작할게요</h1>
+      <p>기록에 쓸 이름이나 닉네임을 적어 주세요.</p>
+      <input name="name" type="text" maxlength="30" autocomplete="off" placeholder="예: 소영, 참여자3" aria-label="이름 또는 닉네임">
+      <small class="flow-start-error" hidden>이름이나 닉네임을 적어 주세요.</small>
+      <button type="submit">시작하기</button>
+    </form>`;
+    document.body.append(box);
+    const form = box.querySelector('form');
+    const input = form.querySelector('input');
+    setTimeout(() => input.focus(), 50);
+    form.addEventListener('submit', event => {
+      event.preventDefault();
+      const name = input.value.replace(/\s+/g, ' ').trim();
+      if (!name) { form.querySelector('.flow-start-error').hidden = false; input.focus(); return; }
+      participant = name;
+      window.kakaoBikeParticipant = name;
+      window.dispatchEvent(new CustomEvent('kakaobike:participant', { detail: name }));
+      box.remove();
+      then();
+    });
+  }
 
   /* ---------- 안내 슬라이드 ---------- */
-  function showIntro() {
-    if (!SLIDES.length) return;
-    let index = 0;
+  function showIntro(startAt = lastSlide) {
+    if (!SLIDES.length || document.querySelector('.intro-deck')) return;
+    let index = Math.min(Math.max(0, startAt), SLIDES.length - 1);
     const deck = document.createElement('div');
     deck.className = 'intro-deck';
     deck.setAttribute('role', 'dialog');
@@ -64,6 +95,7 @@
     // 미리 불러와서 넘길 때 깜빡이지 않게
     SLIDES.forEach(src => { const img = new Image(); img.src = src; });
     const paint = () => {
+      lastSlide = index;
       deck.querySelector('img').src = SLIDES[index];
       deck.querySelectorAll('.intro-dots i').forEach((dot, i) => dot.classList.toggle('on', i === index));
       deck.querySelector('.intro-label').textContent = index === SLIDES.length - 1 ? '터치하면 프로토타입을 시작해요' : '터치하면 다음 장으로';
@@ -71,8 +103,11 @@
     const close = () => {
       deck.remove();
       document.removeEventListener('keydown', onKey);
-      prototypeStartedAt = Date.now();
+      closeDeck = null;
+      if (!prototypeStartedAt) prototypeStartedAt = Date.now();
+      paintNav();
     };
+    closeDeck = close;
     const next = () => { if (index < SLIDES.length - 1) { index++; paint(); } else close(); };
     const prev = () => { if (index > 0) { index--; paint(); } };
     const onKey = event => {
@@ -87,7 +122,7 @@
   /* ---------- 설문으로 넘어가기 ---------- */
   let cta;
   function showCta() {
-    if (cta || document.querySelector('.survey')) return;
+    if (cta || document.querySelector('.survey:not([hidden])')) return;
     cta = document.createElement('div');
     cta.className = 'survey-cta';
     cta.innerHTML = '<span>체험을 마쳤어요. 이제 짧은 설문에 답해 주세요.</span><button type="button">설문하기</button>';
@@ -106,10 +141,15 @@
     return `<div class="choices ${cls}" role="radiogroup">${options.map(([value, label]) =>
       `<label><input type="radio" name="${name}" value="${esc(value)}"><span>${esc(label)}</span></label>`).join('')}</div>`;
   }
+  function hideSurvey() {
+    const existing = document.querySelector('.survey');
+    if (existing) existing.hidden = true;
+  }
   function openSurvey() {
     hideCta();
-    if (document.querySelector('.survey')) return;
-    const minutes = ((Date.now() - prototypeStartedAt) / 60000).toFixed(1);
+    closeDeck?.();
+    const existing = document.querySelector('.survey');
+    if (existing) { existing.hidden = false; paintNav(); return; }
     const root = document.createElement('div');
     root.className = 'survey';
     root.innerHTML = `
@@ -156,7 +196,8 @@
       const response = {
         submitted_at: new Date().toISOString(),
         scenario: scenario ? scenario.options[scenario.selectedIndex].text : '',
-        prototype_minutes: minutes,
+        participant,
+        prototype_minutes: prototypeStartedAt ? ((Date.now() - prototypeStartedAt) / 60000).toFixed(1) : '',
         analytics_session: window.kakaoBikeAnalytics ? window.kakaoBikeAnalytics.id : ''
       };
       for (const id of [...REQUIRED, 'E1']) response[id] = (data.get(id) || '').toString().trim();
@@ -168,6 +209,7 @@
     });
     update();
     root.scrollTop = 0;
+    paintNav();
   }
   function showThanks(root, count) {
     root.innerHTML = `<div class="survey-done"><div>
@@ -185,7 +227,7 @@
   }
   function downloadCsv() {
     const rows = readAll();
-    const headers = ['submitted_at', 'scenario', 'prototype_minutes', 'analytics_session', ...REQUIRED, 'E1'];
+    const headers = ['submitted_at', 'participant', 'scenario', 'prototype_minutes', 'analytics_session', ...REQUIRED, 'E1'];
     const cell = value => `"${String(value ?? '').replace(/"/g, '""')}"`;
     const csv = '﻿' + [headers.join(','), ...rows.map(r => headers.map(h => cell(r[h])).join(','))].join('\n');
     const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
@@ -213,5 +255,42 @@
     paintExportCount();
   }
 
-  showIntro();
+  /* ---------- 단계 이동 (오른쪽 위) ---------- */
+  const STEPS = [['intro', '안내 슬라이드'], ['proto', '프로토타입'], ['survey', '설문']];
+  const nav = document.createElement('nav');
+  nav.className = 'flow-nav';
+  nav.setAttribute('aria-label', '테스트 단계');
+  nav.innerHTML = STEPS.filter(([key]) => key !== 'intro' || SLIDES.length)
+    .map(([key, label], i) => `<button type="button" data-step="${key}"><i>${i + 1}</i>${label}</button>`).join('');
+  nav.hidden = true;
+  document.body.append(nav);
+  function currentStep() {
+    if (document.querySelector('.survey:not([hidden])')) return 'survey';
+    if (document.querySelector('.intro-deck')) return 'intro';
+    return 'proto';
+  }
+  function paintNav() {
+    const step = currentStep();
+    nav.querySelectorAll('[data-step]').forEach(b => b.setAttribute('aria-current', String(b.dataset.step === step)));
+  }
+  function goTo(step) {
+    if (step === 'intro') { hideSurvey(); hideCta(); showIntro(); }
+    if (step === 'proto') { closeDeck?.(); hideSurvey(); }
+    if (step === 'survey') openSurvey();
+    paintNav();
+  }
+  // 슬라이드를 넘길 때 페이지 전체 클릭으로 처리되지 않도록 막음
+  nav.addEventListener('click', event => {
+    event.stopPropagation();
+    const button = event.target.closest('[data-step]');
+    if (button) goTo(button.dataset.step);
+  });
+  setInterval(paintNav, 400);
+
+  askName(() => {
+    nav.hidden = false;
+    if (SLIDES.length) showIntro(0);
+    else prototypeStartedAt = Date.now();
+    paintNav();
+  });
 })();

@@ -4,15 +4,15 @@
   const SHOT_KEY = 'kakaoBikeAnalyticsShots';
   const OFF_KEY = 'kakaoBikeAnalyticsExcluded';
   const W = 402, H = 874;
-  const ORDER = ['slide1', 'slide2', 'slide3', 'slide4', 'slide5', 'home', 'search', 'zone', 'pick', 'scan', 'ride', 'ride_warning', 'penalty', 'arrived', 'camera', 'photo', 'pay', 'done', 'survey'];
+  const ORDER = ['start', 'slide1', 'slide2', 'slide3', 'slide4', 'slide5', 'home', 'search', 'zone', 'pick', 'scan', 'ride', 'ride_warning', 'penalty', 'arrived', 'camera', 'photo', 'pay', 'done', 'survey'];
   const NAMES = {
-    slide1: '안내 슬라이드 1', slide2: '안내 슬라이드 2', slide3: '안내 슬라이드 3', slide4: '안내 슬라이드 4', slide5: '안내 슬라이드 5',
+    start: '이름 입력', slide1: '안내 슬라이드 1', slide2: '안내 슬라이드 2', slide3: '안내 슬라이드 3', slide4: '안내 슬라이드 4', slide5: '안내 슬라이드 5',
     home: '홈', search: '목적지 검색', zone: '반납 구역 선택', pick: '바이크 선택', scan: 'QR 스캔', ride: '주행 중',
     ride_warning: '주행 중 (경고)', penalty: '과태료 안내 창', arrived: '도착', camera: '반납 사진 촬영', photo: '사진 확인',
     pay: '결제', done: '반납 완료', survey: '설문'
   };
   // 머문 시간이 애니메이션·읽기 속도로 정해지는 화면은 '막힘' 판단에서 뺌
-  const NO_STUCK = new Set(['ride', 'ride_warning', 'survey', 'done', 'slide1', 'slide2', 'slide3', 'slide4', 'slide5']);
+  const NO_STUCK = new Set(['start', 'ride', 'ride_warning', 'survey', 'done', 'slide1', 'slide2', 'slide3', 'slide4', 'slide5']);
   const FUNNEL = ['home', 'search', 'zone', 'pick', 'scan', 'ride', 'arrived', 'camera', 'photo', 'pay', 'done'];
   const KIND = { ok: ['정상 클릭', '#16a34a'], dead: ['빈 곳 클릭', '#e11d48'], disabled: ['비활성 버튼', '#9ca3af'], back: ['뒤로가기', '#f59e0b'], blocked: ['막힌 기능', '#0ea5e9'] };
   const MISS = new Set(['dead', 'disabled', 'blocked']);
@@ -32,7 +32,7 @@
 
   function load() {
     const sessions = read(KEY, []).sort((a, b) => a.started_at.localeCompare(b.started_at));
-    sessions.forEach((s, i) => { s.label = 'P' + (i + 1); });
+    sessions.forEach((s, i) => { s.label = s.participant ? s.participant : 'P' + (i + 1); });
     const off = new Set(read(OFF_KEY, []));
     return { all: sessions, used: sessions.filter(s => !off.has(s.id)), off, shots: read(SHOT_KEY, {}) };
   }
@@ -53,7 +53,7 @@
       const d = dwellBy(s);
       for (const [key, ms] of Object.entries(d)) { const x = get(key); x.reached++; x.dwell.push(ms); }
       for (const v of s.visits) get(v.key).visits++;
-      for (const c of s.clicks) get(c.screen).clicks.push({ ...c, who: s.label });
+      for (const c of s.clicks) get(c.screen).clicks.push({ ...c, who: s.id });
       for (const e of s.events) if (e.type === 'rage') get(e.screen).rage++;
     }
     for (const x of Object.values(screens)) {
@@ -123,7 +123,7 @@
           <div class="seg"><button data-mode="heat" aria-pressed="${heatMode === 'heat'}">히트맵</button><button data-mode="dots" aria-pressed="${heatMode === 'dots'}">클릭 점</button></div>
         </div>
         <div class="legend">${Object.values(KIND).map(([label, color]) => `<span><i style="background:${color}"></i>${label}</span>`).join('')}</div>
-        <div class="grid" style="margin-top:14px">${screens.filter(x => !x.key.startsWith('slide') && x.key !== 'survey').map(x => screenCard(x, used.length)).join('')}</div>
+        <div class="grid" style="margin-top:14px">${screens.filter(x => !x.key.startsWith('slide') && x.key !== 'survey' && x.key !== 'start').map(x => screenCard(x, used.length)).join('')}</div>
       </section>
       <section>
         <h2>참여자별 기록</h2>
@@ -131,7 +131,7 @@
           <thead><tr><th>분석 포함</th><th>참여자</th><th>시작</th><th>시나리오</th><th>완료</th><th class="n">과업 시간</th><th class="n">클릭</th><th class="n">잘못 누름</th><th class="n">뒤로</th><th class="n">처음부터</th><th>지나간 화면</th><th></th></tr></thead>
           <tbody>${all.map(s => {
             const miss = s.clicks.filter(c => MISS.has(c.kind)).length;
-            const path = s.visits.filter(v => !v.key.startsWith('slide')).map(v => name(v.key)).filter((k, i, a) => k !== a[i - 1]).join(' → ');
+            const path = s.visits.filter(v => !v.key.startsWith('slide') && v.key !== 'start').map(v => name(v.key)).filter((k, i, a) => k !== a[i - 1]).join(' → ');
             return `<tr class="${off.has(s.id) ? 'off' : ''}">
               <td><input type="checkbox" data-include="${esc(s.id)}" ${off.has(s.id) ? '' : 'checked'} aria-label="${esc(s.label)} 분석 포함"></td>
               <td><b>${esc(s.label)}</b></td><td>${esc(new Date(s.started_at).toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' }))}</td>

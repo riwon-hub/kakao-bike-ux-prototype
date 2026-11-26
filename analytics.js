@@ -25,8 +25,10 @@
     scenario: scenario ? scenario.options[scenario.selectedIndex].text : '',
     viewport: innerWidth + 'x' + innerHeight,
     visits: [], clicks: [], events: [],
+    participant: window.kakaoBikeParticipant || '',
     prototype_start: null, done_at: null, survey_submitted: false
   };
+  addEventListener('kakaobike:participant', event => { session.participant = event.detail; saveSoon(); });
   window.kakaoBikeAnalytics = session;
 
   /* ---------- 저장 ---------- */
@@ -49,7 +51,8 @@
 
   /* ---------- 지금 화면 ---------- */
   function currentKey() {
-    if (document.querySelector('.survey')) return 'survey';
+    if (document.querySelector('.flow-start')) return 'start';
+    if (document.querySelector('.survey:not([hidden])')) return 'survey';
     const deck = document.querySelector('.intro-deck');
     if (deck) {
       const on = [...deck.querySelectorAll('.intro-dots i')].findIndex(dot => dot.classList.contains('on'));
@@ -73,9 +76,10 @@
     closeVisit();
     visit = { key, enter: now(), leave: null, ms: null };
     session.visits.push(visit);
-    if (session.prototype_start == null && !key.startsWith('slide') && key !== 'survey') session.prototype_start = visit.enter;
+    const pre = key.startsWith('slide') || key === 'survey' || key === 'start';
+    if (session.prototype_start == null && !pre) session.prototype_start = visit.enter;
     if (key === 'done' && session.done_at == null) session.done_at = visit.enter;
-    if (!key.startsWith('slide') && key !== 'survey') scheduleShot(key);
+    if (!pre) scheduleShot(key);
     saveSoon();
     return key;
   }
@@ -110,7 +114,7 @@
     const target = event.target;
     if (!(target instanceof Element) || !phone.contains(target)) return;
     const screen = checkScreen();
-    if (screen.startsWith('slide') || screen === 'survey') return;
+    if (screen.startsWith('slide') || screen === 'survey' || screen === 'start') return;
     const hit = interactiveAncestor(target);
     const [x, y] = toPhone(event);
     const label = hit ? labelOf(hit) : '';

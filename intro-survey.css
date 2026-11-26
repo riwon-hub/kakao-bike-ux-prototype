@@ -54,3 +54,23 @@
 .survey-done button{padding:14px 20px;border:0;border-radius:14px;background:#e4e6ea;font:700 15px/1 inherit;cursor:pointer}
 .survey-done button.primary{background:#fee500}
 @media(max-width:700px){.survey .likert span{font-size:16px}.survey section{padding:18px 16px 6px}}
+
+/* ---------- 참여자 이름 ---------- */
+.flow-start{position:fixed;inset:0;z-index:8000;display:grid;place-items:center;padding:24px;background:#111214;font:500 16px/1.5 "Kakao Small Sans","Apple SD Gothic Neo",sans-serif}
+.flow-start-card{width:min(440px,100%);display:grid;gap:12px;padding:34px 30px 30px;border-radius:26px;background:#fff;color:#191a1c;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.flow-start-card h1{margin:0;font:700 26px/1.3 "Kakao Big Sans","Apple SD Gothic Neo",sans-serif}
+.flow-start-card p{margin:0 0 6px;color:#5b616b}
+.flow-start-card input{width:100%;box-sizing:border-box;padding:16px 18px;border:1.5px solid #dfe2e7;border-radius:16px;font:600 18px/1.3 inherit}
+.flow-start-card input:focus{outline:none;border-color:#191a1c}
+.flow-start-error{color:#d92d20;font-size:14px}
+.flow-start-card button{margin-top:6px;padding:17px;border:0;border-radius:16px;background:#fee500;color:#191a1c;font:700 18px/1 inherit;cursor:pointer}
+
+/* ---------- 단계 이동 ---------- */
+.flow-nav{position:fixed;z-index:7000;top:max(14px,env(safe-area-inset-top));right:16px;display:flex;gap:4px;padding:4px;border-radius:16px;background:rgba(25,26,28,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 6px 20px rgba(0,0,0,.25);font:600 13px/1 "Kakao Small Sans","Apple SD Gothic Neo",sans-serif}
+.flow-nav[hidden]{display:none}
+.flow-nav button{display:flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:0;border-radius:12px;background:transparent;color:rgba(255,255,255,.78);font:inherit;cursor:pointer}
+.flow-nav button i{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.18);font-style:normal;font-size:11px}
+.flow-nav button[aria-current=true]{background:#fee500;color:#191a1c}
+.flow-nav button[aria-current=true] i{background:rgba(0,0,0,.12)}
+.survey[hidden]{display:none}
+@media(max-width:700px){.flow-nav{right:8px;left:8px;justify-content:center}.flow-nav button{padding:0 9px}}
