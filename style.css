@@ -673,3 +673,28 @@ dialog{position:fixed;inset:auto;left:var(--dialog-left,10px);bottom:var(--dialo
 .zone-return-shape path{pointer-events:visibleFill;cursor:pointer}
 .zone-return-shape:focus-visible{outline:none}
 .zone-return-shape:focus-visible path{stroke:#006cf4;stroke-width:5;stroke-linejoin:round}
+
+/* Use the supplied 366 × 400 SVG artwork without rebuilding its typography or spacing. */
+.phone .arrival{top:64px;left:18px;right:18px;width:366px;height:400px;padding:0;background:none;border-radius:20px;box-shadow:none;isolation:isolate}
+.arrival-art{position:absolute;left:-24px;top:-16px;width:414px;height:448px;overflow:visible;pointer-events:none;z-index:0}
+.phone .arrival::before{content:none}
+.phone .arrival-title{position:absolute;top:18px;right:18px;height:55px;margin:0;display:block;z-index:1}
+.phone .arrival-title div{display:flex;flex-direction:column;align-items:flex-end;gap:4px;text-align:right;color:#fff}
+.phone .arrival-title b{font-size:18px;line-height:24px;font-weight:700;white-space:nowrap}
+.phone .arrival-title small{font-size:15px;line-height:20px;font-weight:400;white-space:nowrap}
+.phone .arrival details{position:absolute;left:18px;top:89px;width:330px;height:293px;padding:0;background:transparent;border-radius:8px;z-index:1}
+.phone .arrival summary{display:block;width:100%;height:56px;padding:0;list-style:none;border-radius:8px;cursor:pointer}
+.phone .arrival summary::-webkit-details-marker{display:none}
+.phone .arrival summary:focus-visible{outline:2px solid #006cf4;outline-offset:-4px}
+.phone .arrival .arrival-accessible{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap;border:0!important}
+.arrival-reference-stars{display:none}
+.phone .arrival:has(details:not([open])){height:163px}
+.arrival:has(details:not([open])) .arrival-outer-shape{height:163px}
+.arrival:has(details:not([open])) .arrival-inner-shape{height:56px}
+.arrival:has(details:not([open])) .arrival-guidance-body{display:none}
+.arrival:has(details:not([open])) .arrival-chevron{transform:rotate(180deg);transform-box:fill-box;transform-origin:center}
+.phone .arrival details:not([open]){height:56px}
+.phone[data-theme=light] .arrival{--arrival-gradient-start:#145bcd;--arrival-gradient-end:#20afce}
+.phone[data-theme=blue] .arrival{--arrival-gradient-start:#1712b9;--arrival-gradient-end:#0e6aff}
+.phone[data-theme=dark] .arrival{--arrival-gradient-start:#1224b1;--arrival-gradient-end:#2e8bff;--arrival-paper:#111a2b;--arrival-muted:#b9c4d8;--arrival-icon:#fff;--arrival-icon-accent:#fff;--arrival-divider:#37445a}
+.phone[data-theme=dark] .arrival-reference-stars{display:block}
