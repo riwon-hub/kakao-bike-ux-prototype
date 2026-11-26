@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>카카오 T 바이크 UX 프로토타입</title><link rel="stylesheet" href="style.css?v=purple-final"></head>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>카카오 T 바이크 UX 프로토타입</title><link rel="stylesheet" href="style.css?v=pickup-camera-center"></head>
 <body><main class="demo">
  <aside class="controls" aria-label="테스트 설정">
   <div class="brand"><span>T</span> 카카오 T 바이크</div>
@@ -61,7 +61,7 @@
   <div class="map" aria-hidden="true">
    <div class="pick-map">
     <svg class="pick-map-art" viewBox="0 0 402 874" aria-hidden="true">
-     <rect width="402" height="874" class="pick-ground"/>
+     <rect x="-402" y="-874" width="1206" height="2622" class="pick-ground"/>
      <path class="pick-building" d="M0 0H61L89 34 60 78 0 58Z M154 0H292V72L250 57 214 38Z M119 350H279V473H119Z M311 370H340V494H311Z M0 342L43 366 56 447 0 461Z M359 528H402V589H359Z"/>
      <path class="pick-green" d="M0 117L67 90 131 121 198 149 258 174 331 191 315 226 272 244 188 255 103 251 0 234Z"/>
      <path class="pick-street-edge" d="M-10-15L92 25 150 58 219 99 286 131 402 153 M-13 247L105 268 202 264 318 247 404 259 M-10 310L85 329 186 328 277 311 330 271 350 200 374 126 361 50 354-20 M-12 590L81 577 162 576 250 549 334 527 422 528"/>
@@ -321,6 +321,7 @@
    </div>
   </section>
   <div id="pins" class="pins" aria-label="지도에 표시된 자전거">
+   <div id="pickupMapWorld" class="pickup-map-world">
    <svg class="pickup-directions" viewBox="0 0 402 874" aria-hidden="true">
     <defs>
      <marker id="pickup-arrow" viewBox="0 0 12 12" markerWidth="12" markerHeight="12" markerUnits="userSpaceOnUse" refX="10" refY="6" orient="auto"><path d="M1 1L11 6 1 11 3 6Z" fill="#006cf4"/></marker>
@@ -339,6 +340,7 @@
     </g>
    </svg>
    <div id="pickupDistance" class="pickup-distance" role="status"></div>
+   </div>
   </div>
   <div class="status" aria-hidden="true"><span>9:55</span><span>▮▮▮ &nbsp;▰</span></div>
   <section id="picker" class="sheet picker">
@@ -476,5 +478,5 @@
   <div id="toast" role="status" aria-live="polite" class="toast"></div>
  </article></div>
 </div></div>
-</main><script src="app.js?v=purple-final"></script><script type="module" src="ride-background.js?v=purple-final"></script>
+</main><script src="app.js?v=pickup-camera-center"></script><script type="module" src="ride-background.js?v=pickup-camera-center"></script>
 </body></html>

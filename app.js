@@ -73,6 +73,8 @@ const pickupHalo = byId('pickupHalo');
 const pickupDistance = byId('pickupDistance');
 const pickupLocation = byId('pickupLocation');
 const pickupOrigin = pickupLocation.getAttribute('transform');
+const [pickupStartX,pickupStartY]=pickupOrigin.match(/-?\d+(?:\.\d+)?/g).map(Number);
+let pickupPosition={x:pickupStartX,y:pickupStartY};
 const pickupMotionPath = byId('pickupMotionPath');
 let pickupFrame = 0;
 let toastTimer;
@@ -102,7 +104,7 @@ function buildPicker() {
     marker.style.left=x+'px';
     marker.style.top=y+'px';
     marker.innerHTML='<img src="assets/pick-imgIconBike.svg" alt=""><span>사용불가</span>';
-    byId('pins').append(marker);
+    byId('pickupMapWorld').append(marker);
   }
   for (const [index,bike] of bikes.entries()) {
     const pin = document.createElement('button');
@@ -113,7 +115,7 @@ function buildPicker() {
     pin.setAttribute('aria-label',bike.id + ' 지도에서 선택');
     pin.innerHTML = '<b>' + bike.brand + '</b><img src="assets/pick-imgIconBike.svg" alt="">';
     pin.addEventListener('click', () => selectBike(index));
-    byId('pins').append(pin);
+    byId('pickupMapWorld').append(pin);
     pinButtons.push(pin);
     const card = document.createElement('button');
     card.type = 'button';
@@ -162,12 +164,29 @@ function updatePicker() {
   byId('secondary').querySelector('img').hidden=state.saved;
   byId('secondary').querySelector('span').textContent = state.saved?'찜 해제':'QR 스캔하기';
   byId('primary').textContent=state.saved?'이용 시작':'찜하기';
+  updatePickupCamera();
+}
+// Center the map camera in the space between the top controls and the moving sheet.
+// The map, bike pins, walking route and location share one camera transform.
+function updatePickupCamera() {
+  if(state.stage!=='pick') return;
+  const report=phone.querySelector('.pick-map-report');
+  const home=byId('pickerBack');
+  const top=Math.max(report.offsetTop+report.offsetHeight,home.offsetTop+home.offsetHeight)+12;
+  const bottom=phone.clientHeight-picker.offsetHeight;
+  phone.style.setProperty('--pickup-camera-x',(phone.clientWidth/2-pickupPosition.x)+'px');
+  phone.style.setProperty('--pickup-camera-y',((top+bottom)/2-pickupPosition.y)+'px');
+}
+function setPickupPosition(point) {
+  pickupPosition={x:point.x,y:point.y};
+  pickupLocation.setAttribute('transform','translate('+point.x+' '+point.y+')');
+  updatePickupCamera();
 }
 function resetPickupLocation() {
   cancelAnimationFrame(pickupFrame);
   pickupFrame=0;
   pickupMotionPath.setAttribute('stroke-dasharray','0 1');
-  pickupLocation.setAttribute('transform',pickupOrigin);
+  setPickupPosition({x:pickupStartX,y:pickupStartY});
   pickupLocation.removeAttribute('data-arrived');
   const toast=byId('toast');
   if(toast.dataset.appearance==='pickup') toast.classList.remove('shown');
@@ -176,7 +195,7 @@ function moveToSavedBike() {
   const bike=bikes[state.selected];
   const finish=()=>{
     pickupFrame=0;
-    pickupLocation.setAttribute('transform','translate('+bike.x+' '+bike.y+')');
+    setPickupPosition(bike);
     pickupLocation.setAttribute('data-arrived','');
     updatePicker();
     notify('바이크에 도착했어요','pickup');
@@ -192,7 +211,7 @@ function moveToSavedBike() {
     const travelled=1-Math.pow(1-progress,2);
     const point=pickupMotionPath.getPointAtLength(length*travelled);
     pickupMotionPath.setAttribute('stroke-dasharray',travelled+' 1');
-    pickupLocation.setAttribute('transform','translate('+point.x+' '+point.y+')');
+    setPickupPosition(point);
     pickupFrame=requestAnimationFrame(frame);
   };
   pickupFrame=requestAnimationFrame(frame);
@@ -229,6 +248,7 @@ function stage(name) {
   state.stage=name;
   if (phone.contains(document.activeElement)) document.activeElement.blur();
   phone.dataset.stage=name;
+  updatePickupCamera();
   rideCards.hidden=name!=='ride';
   updateRiderMotion();
   const pick=name==='pick', riding=name==='ride'||name==='arrived';
@@ -704,6 +724,7 @@ const viewport=byId('viewport');
 new ResizeObserver(([entry])=>{
   phone.style.setProperty('--screen-scale',String(entry.contentRect.width/402));
 }).observe(viewport);
+new ResizeObserver(updatePickupCamera).observe(picker);
 phone.dataset.theme='purple';
 dialog.dataset.theme='purple';
 visibleRestrictedBlocks=restrictedBlocks.filter(block=>getComputedStyle(block).display!=='none');

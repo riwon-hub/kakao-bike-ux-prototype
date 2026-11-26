@@ -690,3 +690,10 @@ dialog{position:fixed;inset:auto;left:var(--dialog-left,10px);bottom:var(--dialo
 
 /* The final prototype has one theme and two ride scenarios. */
 @media(max-width:700px){.controls{grid-template-columns:1fr}}
+
+/* Follow the current location within the unobstructed map as the sheet changes height. */
+.pick-map{background:var(--pickup-ground)}
+.pick-map-art,.pickup-map-world{transform:translate3d(var(--pickup-camera-x,0px),var(--pickup-camera-y,0px),0)}
+.pickup-map-world{position:absolute;inset:0;pointer-events:none}
+.pins{pointer-events:none}
+.pins .pin{pointer-events:auto}
