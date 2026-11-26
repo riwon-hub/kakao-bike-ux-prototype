@@ -50,6 +50,7 @@ tr.off td{opacity:.4}
 .list li b{font-variant-numeric:tabular-nums;flex:none}
 .list.bad li span::before{content:"✕ ";color:var(--dead)}
 .empty{padding:40px;text-align:center;color:var(--muted)}
+.remote{display:flex;gap:6px;align-items:center;flex-wrap:wrap}.remote input{font:inherit;font-size:14px;width:110px;padding:9px 10px;border:1px solid var(--line);border-radius:10px}a.btn{text-decoration:none;color:inherit}
 .confirm{display:none;gap:8px;align-items:center;font-size:14px}
 .confirm.on{display:flex}
 .note{color:var(--muted);font-size:13px;margin:8px 0 0}
@@ -67,6 +68,7 @@ tr.off td{opacity:.4}
     <p class="sub" id="sub">이 기기에 저장된 테스트 기록</p>
   </div>
   <div class="tools">
+    <span class="remote"><input id="readKey" type="password" autocomplete="off" placeholder="진행자 키" aria-label="진행자 키"><button class="primary" id="loadRemote">구글 시트에서 전체 불러오기</button><a id="sheetLink" class="btn" target="_blank" rel="noopener" hidden>시트 열기</a></span>
     <button id="exportJson">합치기용 파일 내보내기</button>
     <label class="btn">다른 기기 기록 가져오기<input id="importJson" type="file" accept="application/json,.json" multiple hidden></label>
     <button id="csvScreens">화면별 요약 CSV</button>

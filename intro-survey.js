@@ -130,10 +130,19 @@
     document.body.append(cta);
   }
   function hideCta() { cta?.remove(); cta = null; }
+  // 한 번 반납 완료까지 가면 그 뒤로는 프로토타입 화면에 「설문하기」 버튼을 계속 띄움
+  let ctaUnlocked = false;
   new MutationObserver(() => {
-    if (phone.dataset.stage === 'done') setTimeout(() => phone.dataset.stage === 'done' && showCta(), 1200);
-    else hideCta();
+    if (phone.dataset.stage === 'done' && !ctaUnlocked) setTimeout(() => {
+      if (phone.dataset.stage !== 'done') return;
+      ctaUnlocked = true;
+      showCta();
+    }, 1200);
   }).observe(phone, { attributes: true, attributeFilter: ['data-stage'] });
+  function syncCta() {
+    const onPrototype = !document.querySelector('.survey:not([hidden])') && !document.querySelector('.intro-deck');
+    if (ctaUnlocked && onPrototype) showCta(); else hideCta();
+  }
 
   /* ---------- 설문 ---------- */
   const esc = text => text.replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
@@ -204,6 +213,8 @@
       const all = readAll();
       all.push(response);
       localStorage.setItem(STORE_KEY, JSON.stringify(all));
+      // 구글 스프레드시트로 자동 전송 (analytics.js)
+      try { window.kakaoBikeSync?.('survey', response); } catch { /* 전송 실패해도 이 기기에는 저장됨 */ }
       paintExportCount();
       showThanks(root, all.length);
     });
@@ -309,7 +320,7 @@
     const button = event.target.closest('[data-step]');
     if (button) goTo(button.dataset.step);
   });
-  setInterval(paintNav, 400);
+  setInterval(() => { paintNav(); syncCta(); }, 400);
 
   askName(() => {
     nav.hidden = false;

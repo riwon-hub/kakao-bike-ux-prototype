@@ -6,8 +6,47 @@
  *   blocked = 눌렀더니 "등록된 주소가 없어요" 같은 안내만 뜸(프로토타입에서 막힌 기능)
  * - 연타(같은 곳 1.2초 안에 3번 이상), 처음부터 다시, 시나리오 변경도 기록
  * 기록은 이 기기 브라우저(localStorage)에 저장되고 report.html 에서 확인·내보내기 할 수 있음.
+ * 같은 기록과 설문 응답은 구글 스프레드시트(Apps Script 웹 앱)로도 자동 전송됨.
  */
 (() => {
+  /* ---------- 구글 스프레드시트 자동 전송 ---------- */
+  // 소영 님 구글 계정의 Apps Script 웹 앱. 쓰기만 열려 있고, 읽기는 진행자 키가 있어야 함.
+  const SYNC_URL = 'https://script.google.com/macros/s/AKfycbzPyIFotwW2onkwtzBDuqo2MtwtJ4CgVsXuYq7WuYeU-ObOP_L_X3USNLqhBmGYxIw1QA/exec';
+  const QUEUE_KEY = 'kakaoBikeSyncQueue';
+  window.KAKAOBIKE_SYNC_URL = SYNC_URL;
+  const readQueue = () => { try { return JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]'); } catch { return []; } };
+  const writeQueue = queue => { try { localStorage.setItem(QUEUE_KEY, JSON.stringify(queue)); } catch { /* 용량 초과 시 다음 기회에 */ } };
+  let flushing = false;
+  async function flushQueue() {
+    if (flushing || !navigator.onLine) return;
+    flushing = true;
+    let failed = false;
+    try {
+      for (const item of readQueue()) {
+        try {
+          const body = JSON.stringify(item);
+          await fetch(SYNC_URL, { method: 'POST', mode: 'no-cors', keepalive: body.length < 60000, headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body });
+          // 보낸 항목만 큐에서 뺌 (보내는 사이 같은 세션이 새로 바뀌었으면 그건 남김)
+          writeQueue(readQueue().filter(q => !(q.qid === item.qid && JSON.stringify(q) === body)));
+        } catch { failed = true; break; /* 오프라인 등: 나중에 다시 */ }
+      }
+    } finally {
+      flushing = false;
+      if (!failed && readQueue().length) setTimeout(flushQueue, 500);
+    }
+  }
+  // 설문 응답은 쌓아서 보내고, 사용 기록은 세션마다 최신 것 하나만 보냄
+  window.kakaoBikeSync = (type, data) => {
+    const qid = type + ':' + (type === 'session' ? data.id : Date.now() + Math.random());
+    const queue = readQueue().filter(q => q.qid !== qid);
+    queue.push({ qid, type, data });
+    writeQueue(queue);
+    flushQueue();
+  };
+  setInterval(flushQueue, 15000);
+  addEventListener('online', flushQueue);
+  flushQueue();
+
   const KEY = 'kakaoBikeAnalytics';
   const SHOT_KEY = 'kakaoBikeAnalyticsShots';
   const W = 402, H = 874;
@@ -44,10 +83,31 @@
       localStorage.setItem(KEY, JSON.stringify(all));
     } catch (error) { console.warn('사용 기록 저장 실패', error); }
     paintCount();
+    syncSoon();
+  }
+  let lastSync = 0, syncTimer = 0;
+  function syncSoon(force) {
+    if (session.prototype_start == null) return;
+    clearTimeout(syncTimer);
+    const wait = force ? 0 : Math.max(0, 10000 - (Date.now() - lastSync));
+    syncTimer = setTimeout(() => { lastSync = Date.now(); window.kakaoBikeSync('session', session); }, wait);
   }
   const saveSoon = () => { clearTimeout(saveTimer); saveTimer = setTimeout(save, 800); };
-  addEventListener('pagehide', () => { closeVisit(); save(); });
-  document.addEventListener('visibilitychange', () => { if (document.hidden) save(); });
+  function sendNow() {
+    if (session.prototype_start == null) return;
+    save();
+    clearTimeout(syncTimer);
+    const item = { qid: 'session:' + session.id, type: 'session', data: session };
+    const queue = readQueue().filter(q => q.qid !== item.qid);
+    queue.push(item);
+    writeQueue(queue);
+    // 창을 닫는 순간에도 전송되도록 beacon 사용
+    if (navigator.sendBeacon && navigator.sendBeacon(SYNC_URL, new Blob([JSON.stringify(item)], { type: 'text/plain;charset=utf-8' }))) {
+      writeQueue(readQueue().filter(q => q.qid !== item.qid));
+    }
+  }
+  addEventListener('pagehide', () => { closeVisit(); sendNow(); });
+  document.addEventListener('visibilitychange', () => { if (document.hidden) sendNow(); });
 
   /* ---------- 지금 화면 ---------- */
   function currentKey() {
@@ -78,7 +138,7 @@
     session.visits.push(visit);
     const pre = key.startsWith('slide') || key === 'survey' || key === 'start';
     if (session.prototype_start == null && !pre) session.prototype_start = visit.enter;
-    if (key === 'done' && session.done_at == null) session.done_at = visit.enter;
+    if (key === 'done' && session.done_at == null) { session.done_at = visit.enter; setTimeout(() => syncSoon(true), 1000); }
     if (!pre) scheduleShot(key);
     saveSoon();
     return key;
@@ -157,6 +217,7 @@
       session.survey_submitted = true;
       session.events.push({ t: now(), type: 'survey_submitted', screen: 'survey' });
       save();
+      syncSoon(true);
     }
   }).observe(document.body, { childList: true, subtree: true });
 

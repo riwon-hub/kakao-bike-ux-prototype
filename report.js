@@ -288,6 +288,43 @@
     $('confirm').classList.remove('on');
     render();
   };
+  /* ---------- 구글 스프레드시트에서 전체 기기 기록 불러오기 ---------- */
+  const READ_KEY = 'kakaoBikeReadKey';
+  const SYNC_URL = 'https://script.google.com/macros/s/AKfycbzPyIFotwW2onkwtzBDuqo2MtwtJ4CgVsXuYq7WuYeU-ObOP_L_X3USNLqhBmGYxIw1QA/exec';
+  try { $('readKey').value = localStorage.getItem(READ_KEY) || ''; } catch { /* 저장소 없음 */ }
+  async function loadRemote(silent) {
+    const key = $('readKey').value.trim();
+    if (!key) { if (!silent) $('readKey').focus(); return; }
+    const button = $('loadRemote');
+    button.disabled = true; button.textContent = '불러오는 중…';
+    try {
+      const data = await (await fetch(SYNC_URL + '?key=' + encodeURIComponent(key))).json();
+      if (!data.ok) throw new Error(data.error === 'key' ? '진행자 키가 맞지 않아요' : data.error);
+      localStorage.setItem(READ_KEY, key);
+      const local = read(KEY, []);
+      const byId = new Map(local.map(s => [s.id, s]));
+      let added = 0;
+      for (const s of data.sessions || []) {
+        if (!s || !s.id) continue;
+        const mine = byId.get(s.id);
+        if (!mine) added++;
+        // 같은 세션이면 기록이 더 많은 쪽을 남김
+        if (!mine || (s.visits || []).length + (s.clicks || []).length >= (mine.visits || []).length + (mine.clicks || []).length) byId.set(s.id, s);
+      }
+      write(KEY, [...byId.values()]);
+      if (data.sheet) { $('sheetLink').href = data.sheet; $('sheetLink').hidden = false; }
+      render();
+      $('sub').textContent += ` · 구글 시트에서 ${(data.sessions || []).length}명 확인 (새로 ${added}명)`;
+    } catch (error) {
+      $('sub').textContent = '구글 시트에서 불러오지 못했어요: ' + error.message;
+    } finally {
+      button.disabled = false; button.textContent = '구글 시트에서 전체 불러오기';
+    }
+  }
+  $('loadRemote').onclick = () => loadRemote(false);
+  $('readKey').addEventListener('keydown', event => { if (event.key === 'Enter') loadRemote(false); });
+
   addEventListener('storage', render);
   render();
+  loadRemote(true);
 }
