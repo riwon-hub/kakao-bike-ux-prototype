@@ -700,3 +700,7 @@ dialog{position:fixed;inset:auto;left:var(--dialog-left,10px);bottom:var(--dialo
 
 /* Starting a reserved bike becomes available after the approach animation completes. */
 #primary:disabled{background:#e5edfc;border-color:#d0def4;color:#547397;cursor:wait}
+
+/* Safari(아이패드)에서 기울어진 휴대폰(3D transform) 안의 z-index:-1 요소가 안 보이는 문제: 타이머 링을 음수 레이어에서 꺼냄 */
+.meter-ring{z-index:0}
+.meter>b,.meter>small{position:relative;z-index:1}
