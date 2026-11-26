@@ -163,7 +163,10 @@ function updatePicker() {
   }
   byId('secondary').querySelector('img').hidden=state.saved;
   byId('secondary').querySelector('span').textContent = state.saved?'찜 해제':'QR 스캔하기';
-  byId('primary').textContent=state.saved?'이용 시작':'찜하기';
+  const approaching=state.saved&&!arrived;
+  byId('primary').textContent=state.saved?(arrived?'이용 시작':'바이크로 이동 중'):'찜하기';
+  byId('primary').disabled=approaching;
+  byId('primary').setAttribute('aria-busy',String(approaching));
   updatePickupCamera();
 }
 // Center the map camera in the space between the top controls and the moving sheet.
@@ -739,8 +742,9 @@ handle.onpointerup=e=>{
 };
 handle.onpointercancel=()=>{gestureY=null;dragHandled=false;};
 byId('primary').onclick=()=>{
-  if(state.saved) start();
-  else saveSelectedBike();
+  if(state.saved){
+    if(pickupLocation.hasAttribute('data-arrived')) start();
+  } else saveSelectedBike();
 };
 function openScanner(origin) {
   stage('scan');

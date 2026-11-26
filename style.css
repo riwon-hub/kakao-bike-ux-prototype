@@ -697,3 +697,6 @@ dialog{position:fixed;inset:auto;left:var(--dialog-left,10px);bottom:var(--dialo
 .pickup-map-world{position:absolute;inset:0;pointer-events:none}
 .pins{pointer-events:none}
 .pins .pin{pointer-events:auto}
+
+/* Starting a reserved bike becomes available after the approach animation completes. */
+#primary:disabled{background:#e5edfc;border-color:#d0def4;color:#547397;cursor:wait}
