@@ -667,3 +667,9 @@ dialog{position:fixed;inset:auto;left:var(--dialog-left,10px);bottom:var(--dialo
  .controls p{min-height:0;margin:4px 0 0;font-size:12px;line-height:1.5}
  .controls .reset{padding:8px 10px;font-size:12px;line-height:1.4}
 }
+
+/* Every blue return region is selectable using its existing Figma shape. */
+.zone-return-shape{pointer-events:none}
+.zone-return-shape path{pointer-events:visibleFill;cursor:pointer}
+.zone-return-shape:focus-visible{outline:none}
+.zone-return-shape:focus-visible path{stroke:#006cf4;stroke-width:5;stroke-linejoin:round}

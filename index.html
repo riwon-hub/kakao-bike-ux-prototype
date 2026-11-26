@@ -1,4 +1,4 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>카카오 T 바이크 UX 프로토타입</title><link rel="stylesheet" href="style.css?v=compact-controls"></head>
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>카카오 T 바이크 UX 프로토타입</title><link rel="stylesheet" href="style.css?v=return-zones-fix"></head>
 <body><main class="demo">
  <aside class="controls" aria-label="테스트 설정">
   <div class="brand"><span>T</span> 카카오 T 바이크</div>
@@ -110,7 +110,7 @@
      </svg>
      <div class="figma-destination">
       <img src="assets/destination-pin.svg" alt="" width="27" height="37">
-      <span id="ridePinDestination">단국대학교</span>
+      <span id="ridePinDestination">단국대학교 정문</span>
      </div>
      <img id="arrivalBike" class="arrival-bike" alt="" hidden>
      <img id="rider" class="rider" src="assets/rider-chunshik-v3.png" alt="">
@@ -150,10 +150,10 @@
    <button class="home-notice" id="homeNotice" type="button"><b>공지</b> 카카오 T 바이크 첫 30분은 990원! <img src="assets/home-imgIcon2.svg" alt=""></button>
    <div class="home-sheet">
     <div class="home-search-group">
-     <button id="destinationSearch" class="home-search" type="button" aria-label="목적지 검색"><img src="assets/home-imgGroup5.svg" alt=""><span id="homeDestination">단국대학교</span></button>
+     <button id="destinationSearch" class="home-search" type="button" aria-label="목적지 검색"><img src="assets/home-imgGroup5.svg" alt=""><span id="homeDestination">단국대학교 정문</span></button>
      <div class="home-shortcuts">
       <button type="button" id="homePlace"><img src="assets/home-imgIconHome.svg" alt="">집</button>
-      <button type="button" id="campusShortcut"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-6 9 6M4 10v10h16V10M10 20v-5h4v5M3 20h18"/><circle cx="12" cy="10" r="1.3"/></svg>단국대학교</button>
+      <button type="button" id="campusShortcut"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10l9-6 9 6M4 10v10h16V10M10 20v-5h4v5M3 20h18"/><circle cx="12" cy="10" r="1.3"/></svg>단국대학교 정문</button>
       <button type="button" id="workPlace"><img src="assets/home-imgIconPlusCircle.svg" alt="">회사</button>
      </div>
     </div>
@@ -161,7 +161,7 @@
      <img class="review-card-mascot" src="assets/exactdone-imgImage89.png" alt="">
      <div class="review-bike-route">
       <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3.5a6 6 0 0 0-6 6c0 4.5 6 10.8 6 10.8s6-6.3 6-10.8a6 6 0 0 0-6-6Z" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linejoin="round"/><circle cx="12" cy="9.3" r="1.8" fill="currentColor"/></svg>
-      <span><span id="reviewBikeDestination">단국대학교</span>까지 갈 수 있는 바이크</span>
+      <span><span id="reviewBikeDestination">단국대학교 정문</span>까지 갈 수 있는 바이크</span>
      </div>
      <button type="button" id="recommendedBike" class="home-bike-details" aria-label="추천 바이크 지도에서 보기">
       <img class="home-bike-photo" src="assets/home-imgImage98.png" alt="">
@@ -197,13 +197,12 @@
     <button type="button" class="search-row" data-query="단국대학교"><span class="search-icon-tile"><img src="assets/search-imgIcon4.svg" alt=""></span><span><mark>단국</mark>대학교</span></button>
     <button type="button" class="search-row" data-query="단국대학교죽전캠퍼스"><span class="search-icon-tile"><img src="assets/search-imgIcon4.svg" alt=""></span><span><mark>단국</mark>대학교죽전캠퍼스</span></button>
     <button type="button" class="search-row" data-query="단국대"><span class="search-icon-tile"><img src="assets/search-imgIcon4.svg" alt=""></span><span><mark>단국</mark>대</span></button>
-    <button type="button" class="search-row search-place" data-place="campus"><span class="search-icon-tile"><img src="assets/search-imgIcon5.svg" alt=""></span><span><mark>단국</mark>대학교 죽전캠퍼스<small>1.11km · 경기 용인시 수지구 죽전로 152</small></span><span class="search-map-chip"><img src="assets/search-imgIcon6.svg" alt=""></span></button>
-    <button type="button" class="search-row search-place" data-place="gate"><span class="search-icon-tile"><img src="assets/search-imgIcon5.svg" alt=""></span><span><mark>단국</mark>대학교 죽전캠퍼스 정문<small>932m · 경기 용인시 수지구 죽전로 152</small></span><span class="search-map-chip"><img src="assets/search-imgIcon6.svg" alt=""></span></button>
+    <button type="button" class="search-row search-place" data-place="gate"><span class="search-icon-tile"><img src="assets/search-imgIcon5.svg" alt=""></span><span><mark>단국</mark>대학교 정문<small>932m · 경기 용인시 수지구 죽전로 152</small></span><span class="search-map-chip"><img src="assets/search-imgIcon6.svg" alt=""></span></button>
     <p id="searchEmpty" class="search-empty" role="status" hidden>검색 결과가 없어요. 단국대학교를 검색해 보세요.</p>
    </div>
   </section>
   <section id="bikeZone" class="bike-zone" aria-label="목적지 근처 반납 가능 지역" hidden>
-   <div class="zone-map-art" aria-hidden="true">
+   <div class="zone-map-art">
     <img class="zone-map-image" src="assets/zone-imgImage252.png" alt="">
     <div class="zone-map-cleanup"></div>
     <svg class="zone-overlay zone-east zone-hit-region" viewBox="0 0 205 387.5" aria-hidden="true">
@@ -286,7 +285,7 @@
    <div class="zone-status" aria-hidden="true"><b>8:43</b><span><img src="assets/zone-imgSignal.svg" alt=""><img src="assets/exactdone-imgBattery.svg" alt=""></span></div>
    <header class="zone-header">
     <button id="zoneBack" type="button" class="entry-round" aria-label="뒤로"><img src="assets/zone-imgIcon.svg" alt=""></button>
-    <button id="changeDestination" type="button"><span id="zoneDestination">단국대학교</span><img src="assets/zone-imgIconSearch.svg" alt=""></button>
+    <button id="changeDestination" type="button"><span id="zoneDestination">단국대학교 정문</span><img src="assets/zone-imgIconSearch.svg" alt=""></button>
    </header>
    <button id="zoneArea" class="zone-area" type="button" aria-label="지도에서 반납 가능 구역 선택" aria-pressed="false"><svg class="zone-area-shape" viewBox="0 0 110.5 160" aria-hidden="true">
      <path id="zone-imgVector347-Vector 347" d="M2.50001 2.5H108V157.5L2.50001 2.5Z" fill="#6BBDFF" fill-opacity="0.5" stroke-width="5" stroke-linejoin="round" stroke="url(#zone-imgVector347-paint0_linear_0_264)"/>
@@ -313,7 +312,7 @@
    <span id="zoneDragHelp" class="zone-drag-help">도착 핀을 끌어서 확인하세요. 키보드로는 방향키로 이동할 수 있어요.</span>
    <div class="zone-destination">
     <img src="assets/destination-pin.svg" alt="">
-    <span id="zonePinLabel">단국대학교</span>
+    <span id="zonePinLabel">단국대학교 정문</span>
    </div>
    <button id="zoneLocate" class="entry-round zone-locate" aria-label="반납 가능 구역 다시 보기" type="button"><img src="assets/zone-imgIconLocate.svg" alt=""></button>
    <div class="zone-sheet">
@@ -335,7 +334,7 @@
      <path id="pickupHalo" class="pickup-halo"/>
      <path id="pickupLine" class="pickup-line" marker-end="url(#pickup-arrow)"/>
     </g>
-    <g id="pickupLocation" transform="translate(87 416)">
+    <g id="pickupLocation" transform="translate(201 278)">
      <circle class="pickup-location-halo" r="12"/>
      <circle class="pickup-location" r="7"/>
     </g>
@@ -384,7 +383,7 @@
    <div class="siren"><img src="assets/ride-imgIconSiren.svg" alt="">긴급상황</div>
    <div id="rail" class="rail" aria-hidden="true"><img id="railRider" src="assets/rider-chunshik-v3.png" alt=""></div>
    <section id="arrival" class="arrival" hidden><div class="arrival-title"><h2>도착 완료</h2><div><b id="arrivalFare">요금 0원</b><br><small id="arrivalTime">0분 이용</small></div></div><details open><summary>이런 곳엔 주차할 수 없어요</summary><p>해당 구역에 주차 후 적발 시<br>견인, 보관료 및 과태료가 부과될 수 있어요</p><div id="parking" class="parking"></div></details></section>
-   <footer class="sheet ride-footer"><div class="route-chip">코리어학원 <span>›</span> <span id="rideDestination">단국대학교</span> <b class="route-swap">⇄</b></div><div class="actions"><button id="pause" class="btn secondary">ⓘ 일시정지</button><button id="end" class="btn primary">이용 종료</button></div></footer>
+   <footer class="sheet ride-footer"><div class="route-chip">코리어학원 <span>›</span> <span id="rideDestination">단국대학교 정문</span> <b class="route-swap">⇄</b></div><div class="actions"><button id="pause" class="btn secondary">ⓘ 일시정지</button><button id="end" class="btn primary">이용 종료</button></div></footer>
   </section>
   <dialog id="penalty" aria-labelledby="penaltyTitle">
    <div class="penalty">
@@ -403,5 +402,5 @@
   <div id="toast" role="status" aria-live="polite" class="toast"></div>
  </article></div>
 </div></div>
-</main><script src="app.js?v=compact-controls"></script><script type="module" src="ride-background.js?v=compact-controls"></script>
+</main><script src="app.js?v=return-zones-fix"></script><script type="module" src="ride-background.js?v=return-zones-fix"></script>
 </body></html>

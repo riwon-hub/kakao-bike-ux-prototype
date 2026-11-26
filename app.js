@@ -23,11 +23,11 @@ const navigationLine = byId('navigationLine');
 const cycleLine = byId('cycleLine');
 const bikes = [
   { id:'NN4815', minutes:190, walk:2, meters:150, img:'pick-imgImage95.png', x:191, y:206, brand:'T',
-    approach:'M87 416 L118 353 Q144 321 171 301 L191 275 V234', badge:[232,301] },
+    approach:'M201 278 L202 264 L191 258 V234', badge:[240,248] },
   { id:'NN4821', minutes:156, walk:3, meters:225, img:'pick-imgImage96.png', x:62, y:158, brand:'T',
-    approach:'M87 416 L67 374 L35 326 Q30 312 58 297 L98 269 Q108 255 110 236 L109 200 Q104 184 83 175', badge:[153,290] },
+    approach:'M201 278 L202 264 L118 268 Q92 263 75 246 L62 206 V186', badge:[124,284] },
   { id:'JA3896', minutes:120, walk:5, meters:375, img:'pick-imgImage98.png', x:250, y:134, brand:'G',
-    approach:'M87 416 L118 353 Q144 321 171 301 L242 266 L290 242 Q304 231 300 208 L289 170 269 152', badge:[267,295] }
+    approach:'M201 278 L242 266 L290 242 Q304 231 300 208 L289 170 269 152', badge:[272,288] }
 ];
 const normalRoute = [[204,574],[204,474],[168,474],[168,439],[168,349],[168,265],[199,265]];
 byId('rideScenery').dataset.route=JSON.stringify(normalRoute);
@@ -43,8 +43,8 @@ const ratePerMinute = 200;
 const demoStartTime = 60_000;
 const penaltyFee = 20_000;
 const destinations = {
-  campus: { query:'단국대학교', pin:'단국대학교', walkMinutes:3 },
-  gate: { query:'단국대학교 죽전캠퍼스 정문', pin:'단국대 정문', walkMinutes:2 }
+  campus: { query:'단국대학교 정문', pin:'단국대학교 정문', walkMinutes:3 },
+  gate: { query:'단국대학교 정문', pin:'단국대학교 정문', walkMinutes:2 }
 };
 const entryScreens = {home:byId('bikeHome'),search:byId('bikeSearch'),zone:byId('bikeZone')};
 const zoneMarker = byId('zoneMarker');
@@ -527,20 +527,33 @@ function openZone(place, origin) {
   stage('zone');
   moveReturnPin(returnPinStart,false);
 }
-function pointInZone(shape,clientPoint) {
-  const transform=shape.getScreenCTM();
-  return transform!==null&&getComputedStyle(shape.ownerSVGElement).display!=='none'
-    &&shape.isPointInFill(clientPoint.matrixTransform(transform.inverse()));
+// Test the original map shapes in map coordinates, independent of phone tilt/scale.
+function pointInZone(shape,position) {
+  const svg=shape.ownerSVGElement;
+  if(getComputedStyle(svg).display==='none') return false;
+  const box=svg===returnShape.ownerSVGElement?zoneArea:svg;
+  const style=getComputedStyle(box);
+  const view=svg.viewBox.baseVal;
+  const point=new DOMPoint(
+    (position.x-parseFloat(style.left))*view.width/parseFloat(style.width)+view.x,
+    (position.y-parseFloat(style.top))*view.height/parseFloat(style.height)+view.y
+  );
+  return shape.isPointInFill(point);
+}
+function zonePointerPosition(event) {
+  return new DOMPoint(event.clientX,event.clientY)
+    .matrixTransform(byId('zoneWalkLine').getScreenCTM().inverse());
 }
 function moveReturnPin(position, selected=false) {
   returnPin={x:Math.min(382,Math.max(20,position.x)),y:Math.min(675,Math.max(220,position.y))};
-  const viewport=entryScreens.zone.getBoundingClientRect();
-  const clientPoint=new DOMPoint(viewport.left+returnPin.x*viewport.width/402,viewport.top+returnPin.y*viewport.height/874);
-  const restricted=restrictedZoneShapes.some(shape=>pointInZone(shape,clientPoint));
-  const inRecommendedArea=!restricted&&pointInZone(returnShape,clientPoint);
-  const otherArea=restricted||inRecommendedArea?undefined:otherReturnShapes.find(shape=>pointInZone(shape,clientPoint));
+  const restricted=restrictedZoneShapes.some(shape=>pointInZone(shape,returnPin));
+  const inRecommendedArea=!restricted&&pointInZone(returnShape,returnPin);
+  const otherArea=restricted||inRecommendedArea?undefined:otherReturnShapes.find(shape=>pointInZone(shape,returnPin));
   canReturnHere=inRecommendedArea||Boolean(otherArea);
-  for(const shape of otherReturnShapes) shape.toggleAttribute('data-active',shape===otherArea);
+  for(const shape of otherReturnShapes){
+    shape.toggleAttribute('data-active',shape===otherArea);
+    shape.ownerSVGElement.setAttribute('aria-pressed',String(shape===otherArea&&selected));
+  }
   const distance=Math.hypot(returnPin.x-destinationPin.x,returnPin.y-destinationPin.y);
   const walk='도보 '+Math.max(1,Math.round(distance*destination.walkMinutes/defaultWalkDistance))+'분';
   zoneMarker.style.setProperty('--zone-x',returnPin.x+'px');
@@ -632,18 +645,34 @@ byId('searchResults').onclick=event=>{
 byId('zoneBack').onclick=()=>zoneOrigin==='search'?openSearch(destinationInput.value):stage('home');
 byId('changeDestination').onclick=()=>openSearch(destination.query);
 zoneArea.onclick=()=>moveReturnPin(returnPinStart,true);
+for(const shape of otherReturnShapes){
+  const region=shape.ownerSVGElement;
+  const park=region.classList.contains('zone-park');
+  const point=park?{x:300,y:280}:{x:65,y:540};
+  region.setAttribute('role','button');
+  region.setAttribute('tabindex','0');
+  region.removeAttribute('aria-hidden');
+  region.setAttribute('aria-label',(park?'비발디공원':'남서쪽')+' 반납 가능 구역 선택');
+  region.onclick=()=>moveReturnPin(point,true);
+  region.onkeydown=event=>{
+    if(event.key!=='Enter'&&event.key!==' ') return;
+    event.preventDefault();
+    moveReturnPin(point,true);
+  };
+}
+
 zoneMarker.onclick=()=>moveReturnPin(returnPin,true);
 zoneMarker.onpointerdown=event=>{
   if(!event.isPrimary||event.button!==0) return;
-  const bounds=entryScreens.zone.getBoundingClientRect();
-  zoneDrag={id:event.pointerId,x:event.clientX,y:event.clientY,origin:returnPin,scale:402/bounds.width};
+  const point=zonePointerPosition(event);
+  zoneDrag={id:event.pointerId,x:returnPin.x-point.x,y:returnPin.y-point.y};
   zoneMarker.setPointerCapture(event.pointerId);
   zoneMarker.toggleAttribute('data-dragging',true);
 };
 zoneMarker.onpointermove=zoneMarker.onpointerup=event=>{
   if(zoneDrag?.id!==event.pointerId) return;
-  moveReturnPin({x:zoneDrag.origin.x+(event.clientX-zoneDrag.x)*zoneDrag.scale,
-    y:zoneDrag.origin.y+(event.clientY-zoneDrag.y)*zoneDrag.scale},true);
+  const point=zonePointerPosition(event);
+  moveReturnPin({x:point.x+zoneDrag.x,y:point.y+zoneDrag.y},true);
 };
 zoneMarker.onlostpointercapture=()=>{
   zoneDrag=undefined;
