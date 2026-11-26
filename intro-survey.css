@@ -1,0 +1,56 @@
+/* 테스트 진행 흐름: 안내 슬라이드 → 프로토타입 → 사후 설문 */
+.is-hidden{display:none!important}
+
+/* ---------- 안내 슬라이드 ---------- */
+.intro-deck{position:fixed;inset:0;z-index:5000;display:grid;place-items:center;background:#111214;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.intro-deck img{max-width:100vw;max-height:100vh;width:100%;height:100%;object-fit:contain;pointer-events:none}
+.intro-deck .intro-hint{position:absolute;left:50%;bottom:22px;translate:-50% 0;display:flex;align-items:center;gap:14px;padding:9px 16px;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;font:600 14px/1 "Kakao Small Sans","Apple SD Gothic Neo",sans-serif;backdrop-filter:blur(6px)}
+.intro-deck .intro-dots{display:flex;gap:6px}
+.intro-deck .intro-dots i{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,.35)}
+.intro-deck .intro-dots i.on{background:#fee500}
+.intro-deck .intro-prev{position:absolute;left:0;top:0;bottom:0;width:18%}
+
+/* ---------- 설문으로 넘어가기 ---------- */
+.survey-cta{position:fixed;z-index:4000;left:50%;bottom:28px;translate:-50% 0;display:flex;align-items:center;gap:12px;padding:14px 16px 14px 22px;border-radius:20px;background:#fff;box-shadow:0 12px 40px rgba(0,0,0,.28);font:600 16px/1.3 "Kakao Small Sans","Apple SD Gothic Neo",sans-serif;color:#191a1c;animation:survey-rise .35s ease-out}
+.survey-cta button{padding:12px 18px;border:0;border-radius:14px;background:#fee500;color:#191a1c;font:700 16px/1 inherit;cursor:pointer}
+@keyframes survey-rise{from{opacity:0;translate:-50% 20px}}
+.controls .survey-open{margin-top:8px}
+
+/* ---------- 사후 설문 ---------- */
+.survey{position:fixed;inset:0;z-index:6000;overflow:auto;background:#f3f4f6;color:#191a1c;font:500 16px/1.5 "Kakao Small Sans","Apple SD Gothic Neo",sans-serif;-webkit-overflow-scrolling:touch}
+.survey-progress{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:14px;padding:14px max(24px,calc(50% - 360px));background:rgba(243,244,246,.92);backdrop-filter:blur(10px)}
+.survey-progress .bar{flex:1;height:8px;border-radius:99px;background:#e2e4e8;overflow:hidden}
+.survey-progress .bar i{display:block;height:100%;width:0;border-radius:inherit;background:#fee500;transition:width .2s}
+.survey-progress b{font-size:14px;font-variant-numeric:tabular-nums;color:#4b5058}
+.survey-body{max-width:720px;margin:0 auto;padding:12px 24px 120px}
+.survey h1{margin:18px 0 6px;font:700 28px/1.3 "Kakao Big Sans","Apple SD Gothic Neo",sans-serif}
+.survey .survey-lead{margin:0 0 6px;color:#5b616b}
+.survey .survey-scale{margin:0 0 22px;color:#8a9099;font-size:14px}
+.survey section{margin-top:18px;padding:22px 22px 8px;border-radius:22px;background:#fff}
+.survey h2{margin:0 0 6px;font:700 19px/1.3 "Kakao Big Sans","Apple SD Gothic Neo",sans-serif}
+.survey .q{padding:16px 0 18px;border-top:1px solid #eef0f3}
+.survey h2+.q{border-top:0}
+.survey .q.missing .q-title{color:#d92d20}
+.survey .q-title{margin:0 0 12px;font-weight:600}
+.survey .q-title small{margin-right:6px;color:#8a9099;font-weight:700}
+.survey .choices{display:flex;flex-wrap:wrap;gap:8px}
+.survey .choices label{position:relative}
+.survey .choices input{position:absolute;opacity:0;pointer-events:none}
+.survey .choices span{display:block;min-width:64px;padding:12px 16px;border:1.5px solid #dfe2e7;border-radius:14px;background:#fff;text-align:center;font-weight:600;cursor:pointer;transition:background .12s,border-color .12s}
+.survey .choices input:checked+span{border-color:#191a1c;background:#fee500}
+.survey .choices input:focus-visible+span{outline:3px solid #2563eb;outline-offset:2px}
+.survey .likert{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.survey .likert span{min-width:0;padding:12px 0;font-size:18px}
+.survey .likert-ends{display:flex;justify-content:space-between;margin-top:6px;color:#8a9099;font-size:13px}
+.survey textarea{width:100%;min-height:140px;padding:14px 16px;border:1.5px solid #dfe2e7;border-radius:14px;font:500 16px/1.5 inherit;resize:vertical;box-sizing:border-box}
+.survey textarea:focus{outline:none;border-color:#191a1c}
+.survey-submit{position:fixed;left:0;right:0;bottom:0;z-index:2;display:flex;justify-content:center;padding:14px 24px 22px;background:linear-gradient(transparent,#f3f4f6 35%)}
+.survey-submit button{width:min(672px,100%);padding:18px;border:0;border-radius:18px;background:#191a1c;color:#fff;font:700 18px/1 inherit;cursor:pointer}
+.survey-submit button[aria-disabled=true]{background:#b9bdc4}
+.survey-done{min-height:100%;display:grid;place-items:center;padding:40px 24px;text-align:center}
+.survey-done h1{font-size:30px}
+.survey-done p{color:#5b616b}
+.survey-done .row{display:flex;justify-content:center;gap:10px;margin-top:28px;flex-wrap:wrap}
+.survey-done button{padding:14px 20px;border:0;border-radius:14px;background:#e4e6ea;font:700 15px/1 inherit;cursor:pointer}
+.survey-done button.primary{background:#fee500}
+@media(max-width:700px){.survey .likert span{font-size:16px}.survey section{padding:18px 16px 6px}}
