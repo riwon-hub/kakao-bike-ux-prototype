@@ -417,7 +417,7 @@ function updateNavigation(progress,warning) {
   if(byId('distance').textContent!==distance) byId('distance').textContent=distance;
   const maneuver=byId('navManeuver');
   if(maneuver.getAttribute('aria-label')!==instruction) maneuver.setAttribute('aria-label',instruction);
-  const label=warning?'서비스 불가 구역':state.recovering?'반납 가능 구역으로 이동 중':'12:23 도착 예정';
+  const label=warning?'서비스 불가 구역':state.recovering?'반납 가능 구역으로 이동 중':'10:03 도착 예정';
   if(byId('navLabel').textContent!==label) byId('navLabel').textContent=label;
 }
 function updateRide(progress) {
