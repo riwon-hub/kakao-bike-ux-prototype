@@ -1,17 +1,12 @@
 # 팀원 배포 설정
 
-이 브랜치는 GitHub Pages용 배포 설정을 준비한 상태입니다. **아직 활성화하지 않았습니다.** 현재 계정 요금제에서는 비공개 저장소의 GitHub Pages를 사용할 수 없다는 응답을 확인했습니다.
+소유자의 승인으로 2026년 11월 26일 저장소를 공개로 전환하고 **Settings → Pages → Source → GitHub Actions**를 활성화했습니다. 코드와 이미지 파일은 누구나 볼 수 있습니다.
 
-저장소를 공개로 전환하려면 소유자의 명시적인 승인이 필요합니다. 공개 전환 시 코드와 이미지 파일을 누구나 볼 수 있습니다. 비공개를 유지하려면 지원되는 GitHub 요금제를 사용하거나 별도 호스팅을 연결해야 합니다. 이 설정은 요금제나 저장소 공개 범위를 자동으로 바꾸지 않습니다.
+배포 주소: **https://riwon-hub.github.io/kakao-bike-ux-prototype/**
 
-## 활성화 순서
+배포 기록과 수동 실행: **https://github.com/riwon-hub/kakao-bike-ux-prototype/actions/workflows/deploy-pages.yml**
 
-1. 소유자가 비공개 유지 또는 공개 전환 여부를 결정합니다.
-2. GitHub Pages를 지원하는 상태에서 저장소의 **Settings → Pages → Source → GitHub Actions**를 선택합니다.
-3. 이 브랜치를 `main`으로 머지합니다.
-4. **Actions → Deploy prototype**에서 성공 여부와 배포 주소를 확인합니다.
-
-## 활성화 후 팀원 사용 방법
+## 팀원 사용 방법
 
 - `main`에 머지하거나 직접 수정하면 자동으로 배포됩니다.
 - 다시 배포하려면 **Actions → Deploy prototype → Run workflow → main → Run workflow**를 선택합니다.
