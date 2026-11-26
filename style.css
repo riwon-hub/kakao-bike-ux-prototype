@@ -655,3 +655,15 @@ dialog{position:fixed;inset:auto;left:var(--dialog-left,10px);bottom:var(--dialo
  .iphone-layer{z-index:1;transform-origin:calc(697 / 1392 * 100%) calc(748.5 / 1044 * 100%)}
  .device-screen{transform-origin:50% calc(583 / 574 * 100%)}
 }
+
+/* Compact desktop test settings. */
+@media(min-width:701px){
+ .controls{width:210px;padding:14px;gap:10px;border-radius:14px}
+ .controls .brand{font-size:12px;gap:7px}
+ .controls .brand span{width:22px;height:22px;font-size:16px;border-radius:6px}
+ .controls h1{margin:2px 0 6px;font-size:22px;line-height:1.25}
+ .controls label{font-size:11px}
+ .controls select{width:100%;min-width:0;padding:8px;font-size:13px;line-height:1.35}
+ .controls p{min-height:0;margin:4px 0 0;font-size:12px;line-height:1.5}
+ .controls .reset{padding:8px 10px;font-size:12px;line-height:1.4}
+}
