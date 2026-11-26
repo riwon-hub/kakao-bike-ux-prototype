@@ -23,11 +23,11 @@ const navigationLine = byId('navigationLine');
 const cycleLine = byId('cycleLine');
 const bikes = [
   { id:'NN4815', minutes:190, walk:2, meters:150, img:'pick-imgImage95.png', x:191, y:206, brand:'T',
-    approach:'M201 278 L202 264 L191 258 V234', badge:[240,248] },
+    approach:'M201 278 L202 264 L191 258 V234', badge:[292,275] },
   { id:'NN4821', minutes:156, walk:3, meters:225, img:'pick-imgImage96.png', x:62, y:158, brand:'T',
-    approach:'M201 278 L202 264 L118 268 Q92 263 75 246 L62 206 V186', badge:[124,284] },
+    approach:'M201 278 L202 264 L118 268 Q92 263 75 246 L62 206 V186', badge:[300,300] },
   { id:'JA3896', minutes:120, walk:5, meters:375, img:'pick-imgImage98.png', x:250, y:134, brand:'G',
-    approach:'M201 278 L242 266 L290 242 Q304 231 300 208 L289 170 269 152', badge:[272,288] }
+    approach:'M201 278 L242 266 L290 242 Q304 231 300 208 L289 170 269 152', badge:[110,300] }
 ];
 const normalRoute = [[204,574],[204,474],[168,474],[168,439],[168,349],[168,265],[199,265]];
 byId('rideScenery').dataset.route=JSON.stringify(normalRoute);

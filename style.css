@@ -221,8 +221,8 @@ dialog{position:fixed;inset:auto;left:var(--dialog-left,10px);bottom:var(--dialo
 .pick-island i{width:36px;border-bottom:2px dotted #d9d25d}
 .pickup-directions,.pickup-distance{pointer-events:none}
 .pickup-halo,.pickup-line{fill:none;stroke-linejoin:round;stroke-linecap:round}
-.pickup-halo{stroke:#fff;stroke-width:6;opacity:.82}
-.pickup-line{stroke:#006cf4;stroke-width:2.7;stroke-dasharray:5 6}
+.pickup-halo{stroke:#fff;stroke-width:7.5;opacity:.9}
+.pickup-line{stroke:#006cf4;stroke-width:4;stroke-dasharray:5 6}
 .pickup-location-halo{fill:#9ac8ff;opacity:.7}
 .pickup-location{fill:#006cf4;stroke:white;stroke-width:2.5}
 .pickup-directions:has(#pickupLocation[data-arrived]) :is(.pickup-line,.pickup-halo){visibility:hidden}
