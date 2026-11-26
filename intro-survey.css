@@ -65,12 +65,26 @@
 .flow-start-error{color:#d92d20;font-size:14px}
 .flow-start-card button{margin-top:6px;padding:17px;border:0;border-radius:16px;background:#fee500;color:#191a1c;font:700 18px/1 inherit;cursor:pointer}
 
-/* ---------- 단계 이동 ---------- */
-.flow-nav{position:fixed;z-index:7000;top:max(14px,env(safe-area-inset-top));right:16px;display:flex;gap:4px;padding:4px;border-radius:16px;background:rgba(25,26,28,.72);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 6px 20px rgba(0,0,0,.25);font:600 13px/1 "Kakao Small Sans","Apple SD Gothic Neo",sans-serif}
+/* ---------- 상단 진행바 ---------- */
+:root{--flow-bar:52px}
+.flow-nav{position:fixed;z-index:7000;top:0;left:0;right:0;height:calc(var(--flow-bar) + env(safe-area-inset-top));padding:env(safe-area-inset-top) 20px 0;box-sizing:border-box;display:flex;flex-direction:column;justify-content:center;background:rgba(20,21,23,.86);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);font:600 14px/1 "Kakao Small Sans","Apple SD Gothic Neo",sans-serif;color:#fff}
 .flow-nav[hidden]{display:none}
-.flow-nav button{display:flex;align-items:center;gap:6px;min-height:36px;padding:0 12px;border:0;border-radius:12px;background:transparent;color:rgba(255,255,255,.78);font:inherit;cursor:pointer}
-.flow-nav button i{display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.18);font-style:normal;font-size:11px}
-.flow-nav button[aria-current=true]{background:#fee500;color:#191a1c}
-.flow-nav button[aria-current=true] i{background:rgba(0,0,0,.12)}
+.flow-steps{display:flex;align-items:center;justify-content:center;gap:10px;max-width:760px;width:100%;margin:0 auto}
+.flow-nav button{flex:none;display:flex;align-items:center;gap:8px;min-height:40px;padding:0 10px;border:0;border-radius:12px;background:transparent;color:rgba(255,255,255,.55);font:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.flow-nav button:focus-visible{outline:2px solid #fee500;outline-offset:2px}
+.flow-dot{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;border:1.5px solid rgba(255,255,255,.35);font-size:12px;font-weight:700;box-sizing:border-box}
+.flow-label em{font-style:normal;font-weight:500;opacity:.75;font-variant-numeric:tabular-nums}
+.flow-nav button[data-state=current]{color:#fff}
+.flow-nav button[data-state=current] .flow-dot{background:#fee500;border-color:#fee500;color:#191a1c}
+.flow-nav button[data-state=done]{color:rgba(255,255,255,.85)}
+.flow-nav button[data-state=done] .flow-dot{background:rgba(254,229,0,.22);border-color:#fee500;color:#fee500}
+.flow-link{flex:1;min-width:24px;height:2px;border-radius:2px;background:rgba(255,255,255,.18)}
+.flow-link.on{background:#fee500}
+.flow-track{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(255,255,255,.08)}
+.flow-track i{display:block;height:100%;width:0;background:#fee500;transition:width .35s ease}
+/* 진행바 아래로 내용 밀기 */
+body.has-flow-bar .survey{top:calc(var(--flow-bar) + env(safe-area-inset-top))}
+body.has-flow-bar .controls{top:calc(var(--flow-bar) + 16px)}
+body.has-flow-bar .intro-deck{top:calc(var(--flow-bar) + env(safe-area-inset-top))}
 .survey[hidden]{display:none}
-@media(max-width:700px){.flow-nav{right:8px;left:8px;justify-content:center}.flow-nav button{padding:0 9px}}
+@media(max-width:700px){:root{--flow-bar:46px}.flow-nav{padding-left:8px;padding-right:8px;font-size:12px}.flow-steps{gap:4px}.flow-nav button{padding:0 4px;gap:5px}.flow-label em{display:none}.flow-link{min-width:8px}}

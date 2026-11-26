@@ -2,7 +2,7 @@
  * - 슬라이드: 화면 아무 곳이나 터치하면 다음, 왼쪽 가장자리 터치(또는 ←)는 이전. 마지막 장 다음은 프로토타입.
  * - 프로토타입에서 반납 완료(done)가 되면 「설문하기」 버튼이 나타나고, 진행자는 왼쪽 패널에서 언제든 설문을 열 수 있음.
  * - 응답은 이 기기 브라우저(localStorage)에 쌓이고, 패널의 「설문 응답 CSV」로 내려받음.
- * - 시작할 때 참여자 이름(닉네임)을 받고, 오른쪽 위 단계 버튼으로 슬라이드·프로토타입·설문을 오갈 수 있음.
+ * - 시작할 때 참여자 이름(닉네임)을 받고, 화면 맨 위 진행바로 슬라이드·프로토타입·설문을 오갈 수 있음.
  */
 (() => {
   // 안내 슬라이드 이미지 (순서대로). 비어 있으면 슬라이드 없이 바로 프로토타입이 시작됨.
@@ -255,23 +255,47 @@
     paintExportCount();
   }
 
-  /* ---------- 단계 이동 (오른쪽 위) ---------- */
-  const STEPS = [['intro', '안내 슬라이드'], ['proto', '프로토타입'], ['survey', '설문']];
+  /* ---------- 상단 진행바 (단계 이동) ---------- */
+  const STEPS = [['intro', '안내 슬라이드'], ['proto', '프로토타입'], ['survey', '설문']].filter(([key]) => key !== 'intro' || SLIDES.length);
   const nav = document.createElement('nav');
   nav.className = 'flow-nav';
-  nav.setAttribute('aria-label', '테스트 단계');
-  nav.innerHTML = STEPS.filter(([key]) => key !== 'intro' || SLIDES.length)
-    .map(([key, label], i) => `<button type="button" data-step="${key}"><i>${i + 1}</i>${label}</button>`).join('');
+  nav.setAttribute('aria-label', '테스트 진행 단계');
+  nav.innerHTML = `<div class="flow-steps">${STEPS.map(([key, label], i) =>
+    `<button type="button" data-step="${key}"><span class="flow-dot">${i + 1}</span><span class="flow-label">${label}<em></em></span></button>`).join('<span class="flow-link" aria-hidden="true"></span>')}</div>
+    <div class="flow-track" aria-hidden="true"><i></i></div>`;
   nav.hidden = true;
   document.body.append(nav);
+  let protoDone = false;
   function currentStep() {
     if (document.querySelector('.survey:not([hidden])')) return 'survey';
     if (document.querySelector('.intro-deck')) return 'intro';
     return 'proto';
   }
+  function surveyProgress() {
+    const form = document.querySelector('.survey form');
+    if (document.querySelector('.survey-done')) return [REQUIRED.length, REQUIRED.length];
+    if (!form) return [0, REQUIRED.length];
+    const data = new FormData(form);
+    return [REQUIRED.filter(id => data.get(id)).length, REQUIRED.length];
+  }
   function paintNav() {
     const step = currentStep();
-    nav.querySelectorAll('[data-step]').forEach(b => b.setAttribute('aria-current', String(b.dataset.step === step)));
+    if (phone.dataset.stage === 'done') protoDone = true;
+    const at = STEPS.findIndex(([key]) => key === step);
+    const [answered, total] = surveyProgress();
+    const sub = {
+      intro: `${lastSlide + 1}/${SLIDES.length}`,
+      proto: protoDone ? '완료' : '',
+      survey: document.querySelector('.survey-done') ? '제출 완료' : `${answered}/${total}`
+    };
+    nav.querySelectorAll('[data-step]').forEach((button, i) => {
+      button.dataset.state = i < at ? 'done' : i === at ? 'current' : 'next';
+      button.setAttribute('aria-current', String(i === at));
+      button.querySelector('em').textContent = sub[button.dataset.step] ? ' ' + sub[button.dataset.step] : '';
+    });
+    nav.querySelectorAll('.flow-link').forEach((link, i) => link.classList.toggle('on', i < at));
+    const part = step === 'intro' ? (lastSlide + 1) / SLIDES.length : step === 'proto' ? (protoDone ? 1 : 0.5) : answered / total;
+    nav.querySelector('.flow-track i').style.width = Math.min(100, (at + part) / STEPS.length * 100) + '%';
   }
   function goTo(step) {
     if (step === 'intro') { hideSurvey(); hideCta(); showIntro(); }
@@ -289,6 +313,7 @@
 
   askName(() => {
     nav.hidden = false;
+    document.body.classList.add('has-flow-bar');
     if (SLIDES.length) showIntro(0);
     else prototypeStartedAt = Date.now();
     paintNav();
