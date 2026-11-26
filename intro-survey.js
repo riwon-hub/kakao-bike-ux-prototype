@@ -156,7 +156,8 @@
       const response = {
         submitted_at: new Date().toISOString(),
         scenario: scenario ? scenario.options[scenario.selectedIndex].text : '',
-        prototype_minutes: minutes
+        prototype_minutes: minutes,
+        analytics_session: window.kakaoBikeAnalytics ? window.kakaoBikeAnalytics.id : ''
       };
       for (const id of [...REQUIRED, 'E1']) response[id] = (data.get(id) || '').toString().trim();
       const all = readAll();
@@ -184,7 +185,7 @@
   }
   function downloadCsv() {
     const rows = readAll();
-    const headers = ['submitted_at', 'scenario', 'prototype_minutes', ...REQUIRED, 'E1'];
+    const headers = ['submitted_at', 'scenario', 'prototype_minutes', 'analytics_session', ...REQUIRED, 'E1'];
     const cell = value => `"${String(value ?? '').replace(/"/g, '""')}"`;
     const csv = '﻿' + [headers.join(','), ...rows.map(r => headers.map(h => cell(r[h])).join(','))].join('\n');
     const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
