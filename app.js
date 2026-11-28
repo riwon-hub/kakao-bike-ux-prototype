@@ -527,9 +527,9 @@ function receipt(){
       <span>출발</span><span>도착</span>
     </div>`;
   stage('done');
-  screen('반납 완료','<div class="receipt"><img class="receipt-check" src="assets/exactdone-imgGroup34.svg" alt=""><h2>반납이 완료되었습니다</h2><img class="receipt-mascot" src="assets/exactdone-imgImage89.png" alt=""></div><div class="receipt-route"><div><b>이용 경로</b><b>총 2.4 km　'+rideMinutes()+'분</b></div>'+routeMap+'</div><div class="receipt-price"><span><img src="assets/exactdone-imgIconCard.svg" alt=""> 결제금액</span><b>'+currency(totalFare())+'</b></div><div class="receipt-help"><span><img src="assets/exactdone-imgIconInfo.svg" alt="">고장 접수</span><span><img src="assets/exactdone-imgIconAlert.svg" alt="">서비스 문의</span></div><div class="actions"><button id="home" class="btn primary">바이크 홈</button></div>');
+  screen('반납 완료','<div class="receipt"><img class="receipt-check" src="assets/exactdone-imgGroup34.svg" alt=""><h2>반납이 완료되었습니다</h2><img class="receipt-mascot" src="assets/exactdone-imgImage89.png" alt=""></div><div class="receipt-route"><div><b>이용 경로</b><b>총 2.4 km　'+rideMinutes()+'분</b></div>'+routeMap+'</div><div class="receipt-price"><span><img src="assets/exactdone-imgIconCard.svg" alt=""> 결제금액</span><b>'+currency(totalFare())+'</b></div><div class="receipt-help"><span><img src="assets/exactdone-imgIconInfo.svg" alt="">고장 접수</span><span><img src="assets/exactdone-imgIconAlert.svg" alt="">서비스 문의</span></div><div class="actions"><button id="finishRide" class="btn primary">이용 완료</button></div>');
   overlay.classList.add('receipt-screen');
-  byId('home').onclick=reset;
+  byId('finishRide').onclick=()=>window.dispatchEvent(new CustomEvent('kakaobike:complete'));
 }
 function setDestination(place) {
   destination=place;

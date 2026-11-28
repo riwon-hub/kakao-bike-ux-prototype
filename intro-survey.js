@@ -1,6 +1,6 @@
 /* 테스트 진행 흐름: 안내 슬라이드 → 프로토타입 → 사후 설문
  * - 슬라이드: 화면 아무 곳이나 터치하면 다음, 왼쪽 가장자리 터치(또는 ←)는 이전. 마지막 장 다음은 프로토타입.
- * - 프로토타입에서 반납 완료(done)가 되면 「설문하기」 버튼이 나타나고, 진행자는 왼쪽 패널에서 언제든 설문을 열 수 있음.
+ * - 반납 완료 화면에서 「이용 완료」를 누르면 3분 설문 안내를 표시하고 설문으로 이어짐.
  * - 응답은 이 기기 브라우저(localStorage)에 쌓이고, 패널의 「설문 응답 CSV」로 내려받음.
  * - 시작할 때 참여자 이름(닉네임)을 받고, 화면 맨 위 진행바로 슬라이드·프로토타입·설문을 오갈 수 있음.
  */
@@ -120,27 +120,41 @@
 
   /* ---------- 설문으로 넘어가기 ---------- */
   let cta;
+  let surveyInvite;
+  let ctaUnlocked = false;
   function showCta() {
-    if (cta || document.querySelector('.survey:not([hidden])')) return;
+    if (cta || surveyInvite?.open || document.querySelector('.survey:not([hidden])')) return;
     cta = document.createElement('div');
     cta.className = 'survey-cta';
-    cta.innerHTML = '<span>체험을 마쳤어요. 이제 짧은 설문에 답해 주세요.</span><button type="button">설문하기</button>';
+    cta.innerHTML = '<span>체험 후 설문은 약 3분 정도 소요돼요.</span><button type="button">설문 시작하기</button>';
     cta.querySelector('button').onclick = openSurvey;
     document.body.append(cta);
   }
   function hideCta() { cta?.remove(); cta = null; }
-  // 한 번 반납 완료까지 가면 그 뒤로는 프로토타입 화면에 「설문하기」 버튼을 계속 띄움
-  let ctaUnlocked = false;
-  new MutationObserver(() => {
-    if (phone.dataset.stage === 'done' && !ctaUnlocked) setTimeout(() => {
-      if (phone.dataset.stage !== 'done') return;
-      ctaUnlocked = true;
-      showCta();
-    }, 1200);
-  }).observe(phone, { attributes: true, attributeFilter: ['data-stage'] });
+  function showSurveyInvite() {
+    if (phone.dataset.stage !== 'done') return;
+    ctaUnlocked = true;
+    hideCta();
+    if (!surveyInvite) {
+      surveyInvite = document.createElement('dialog');
+      surveyInvite.className = 'survey-invite';
+      surveyInvite.setAttribute('aria-labelledby', 'surveyInviteTitle');
+      surveyInvite.setAttribute('aria-describedby', 'surveyInviteDescription');
+      surveyInvite.innerHTML = `<h2 id="surveyInviteTitle">설문으로 넘어가시겠어요?</h2>
+        <p id="surveyInviteDescription">체험해 주셔서 감사해요.<br>설문은 약 3분 정도 소요돼요.</p>
+        <div class="survey-invite-actions"><button type="button" data-act="later">완료 화면 보기</button>
+        <button type="button" data-act="survey" autofocus>설문 시작하기</button></div>`;
+      surveyInvite.querySelector('[data-act="later"]').onclick = () => surveyInvite.close();
+      surveyInvite.querySelector('[data-act="survey"]').onclick = openSurvey;
+      surveyInvite.addEventListener('close', syncCta);
+      document.body.append(surveyInvite);
+    }
+    if (!surveyInvite.open) surveyInvite.showModal();
+  }
+  window.addEventListener('kakaobike:complete', showSurveyInvite);
   function syncCta() {
     const onPrototype = !document.querySelector('.survey:not([hidden])') && !document.querySelector('.intro-deck');
-    if (ctaUnlocked && onPrototype) showCta(); else hideCta();
+    if (ctaUnlocked && onPrototype && phone.dataset.stage !== 'done') showCta(); else hideCta();
   }
 
   /* ---------- 설문 ---------- */
@@ -154,6 +168,7 @@
     if (existing) existing.hidden = true;
   }
   function openSurvey() {
+    if (surveyInvite?.open) surveyInvite.close();
     hideCta();
     closeDeck?.();
     const existing = document.querySelector('.survey');
@@ -164,7 +179,7 @@
       <div class="survey-progress"><div class="bar"><i></i></div><b class="count"></b></div>
       <form class="survey-body" novalidate>
         <h1>사용성 테스트 후 설문지</h1>
-        <p class="survey-lead">방금 체험한 프로토타입에 대해 느낀 대로 답해 주세요. 정답은 없어요.</p>
+        <p class="survey-lead">약 3분 정도 소요돼요. 방금 체험한 프로토타입에 대해 느낀 대로 답해 주세요. 정답은 없어요.</p>
         <p class="survey-scale">A~D 문항: 1 전혀 그렇지 않다 · 2 그렇지 않다 · 3 보통이다 · 4 그렇다 · 5 매우 그렇다</p>
         <section><h2>기본 질문</h2>${BASIC.map(([id, title, options]) => `
           <div class="q" data-q="${id}"><p class="q-title">${esc(title)}</p>${choiceGroup(id, options.map(o => [o, o]))}</div>`).join('')}
