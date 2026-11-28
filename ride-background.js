@@ -2,7 +2,7 @@ import * as THREE from './assets/three.module.min.js';
 
 const scenery = document.getElementById('rideScenery');
 const ridingPhone = document.getElementById('phone');
-const desktopScenery = window.matchMedia('(min-width:701px)');
+const desktopScenery = window.matchMedia('(min-width:1001px), (min-width:701px) and (pointer:fine)');
 const reducedMotion = window.matchMedia('(prefers-reduced-motion:reduce)');
 const bicycle = document.querySelector('.device');
 let renderer;

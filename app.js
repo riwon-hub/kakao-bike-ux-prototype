@@ -2,6 +2,8 @@ const embeddedImages = {"arrival-img01BrailleBlock1.svg": "assets/arrival-img01B
 'use strict';
 const byId = id => document.getElementById(id);
 const phone = byId('phone');
+const mobileViewport = matchMedia('(max-width:700px), (max-width:1000px) and (pointer:coarse)');
+if(mobileViewport.matches) byId('scenario').value='restricted';
 const picker = byId('picker');
 const overlay = byId('overlay');
 const dialog = byId('penalty');
@@ -64,7 +66,7 @@ let destination = destinations.campus;
 let zoneOrigin = 'search';
 let pickerOrigin = 'zone';
 const svgNamespace = 'http://www.w3.org/2000/svg';
-const state = { selected:0, saved:false, expanded:false, rideTime:0, stage:'pick', elapsed:0, paused:false, restricted:false, deviating:false, recovering:false, fee:false, route:normalRoute, riderPosition:normalRoute[0] };
+const state = { selected:0, saved:false, expanded:false, rideTime:0, stage:'pick', elapsed:0, paused:false, restricted:false, restrictedElapsed:0, deviating:false, recovering:false, fee:false, route:normalRoute, riderPosition:normalRoute[0] };
 const pinButtons = [];
 const cardButtons = [];
 const nextCards = [];
@@ -287,7 +289,7 @@ function screen(title, content, back, dark=false) {
 function reset() {
   byId("hint").textContent = "목적지를 검색하고 반납할 지역과 바이크를 골라 보세요.";
   if(dialog.open) dialog.close();
-  Object.assign(state,{selected:0,saved:false,expanded:false,elapsed:0,paused:false,restricted:false,deviating:false,recovering:false,fee:false,route:normalRoute,riderPosition:normalRoute[0]});
+  Object.assign(state,{selected:0,saved:false,expanded:false,elapsed:0,paused:false,restricted:false,restrictedElapsed:0,deviating:false,recovering:false,fee:false,route:normalRoute,riderPosition:normalRoute[0]});
   byId('nav').dataset.warning='false';
   phone.dataset.warning='false';
   byId('pause').textContent='ⓘ 일시정지';
@@ -316,6 +318,7 @@ function start() {
   paintRideTime();
   state.paused=false;
   state.restricted=false;
+  state.restrictedElapsed=0;
   updateRide(0);
   stage('ride');
   byId('hint').textContent='춘식이가 이동해요. 이용 종료 버튼을 눌러 반납을 체험할 수 있어요.';
@@ -328,7 +331,10 @@ function measureRideRoute(route) {
   return route.slice(1).map((end,i)=>{
     const start=route[i], dx=end[0]-start[0], dy=end[1]-start[1];
     const length=Math.hypot(dx,dy);
-    const segment={start,end,dx,dy,length,offset,cycle:route===normalRoute&&i===3};
+    const cycle=dx===0&&start[0]===normalRoute[3][0]
+      &&Math.min(start[1],end[1])>=normalRoute[4][1]
+      &&Math.max(start[1],end[1])<=normalRoute[3][1];
+    const segment={start,end,dx,dy,length,offset,cycle};
     offset+=length;
     return segment;
   }).filter(segment=>segment.length>0);
@@ -479,11 +485,17 @@ function tick(now) {
   const delta=Math.max(0,now-lastTime);
   lastTime=now;
   if(state.stage==='ride'&&!dialog.open&&!state.paused){
-    state.elapsed+=Math.min(70,delta);
+    const activeDelta=Math.min(70,delta);
+    state.elapsed+=activeDelta;
     state.rideTime+=delta;
     paintRideTime();
     const duration=state.recovering?recoveryDuration:state.deviating?deviationDuration:normalRideDuration;
     updateRide(rideProgress(Math.min(1,state.elapsed/duration)));
+    // Only mobile tests automatically rejoin the planned route after the warning.
+    if(mobileViewport.matches&&state.deviating&&state.restricted){
+      state.restrictedElapsed+=activeDelta;
+      if(state.restrictedElapsed>=1000) resumePlannedRoute();
+    } else state.restrictedElapsed=0;
   }
   requestAnimationFrame(tick);
 }
@@ -727,6 +739,9 @@ const viewport=byId('viewport');
 new ResizeObserver(([entry])=>{
   phone.style.setProperty('--screen-scale',String(entry.contentRect.width/402));
 }).observe(viewport);
+mobileViewport.addEventListener('change',()=>{
+  if(state.stage!=='ride') byId('scenario').value=mobileViewport.matches?'restricted':'normal';
+});
 new ResizeObserver(updatePickupCamera).observe(picker);
 phone.dataset.theme='purple';
 dialog.dataset.theme='purple';
@@ -771,14 +786,28 @@ byId('end').onclick=()=>{
 dialog.addEventListener('close',updateRiderMotion);
 byId('continue').onclick=()=>dialog.close();
 byId('acceptFee').onclick=()=>camera(true);
-byId('reroute').onclick=()=>{
-  dialog.close();
+function resumeRideRoute(waypoints){
+  if(dialog.open) dialog.close();
   const position=state.riderPosition;
   earlierRoute=routePast.getAttribute('d')??'';
-  setRoute([position,...recoveryWaypoints]);state.elapsed=0;state.deviating=false;state.recovering=true;state.paused=false;state.restricted=false;
+  setRoute([position,...waypoints]);state.elapsed=0;state.deviating=false;state.recovering=true;state.paused=false;state.restrictedElapsed=0;
   byId('pause').textContent='ⓘ 일시정지';
   updateRide(0);
+}
+function resumePlannedRoute(){
+  const [x,y]=state.riderPosition;
+  let nearest,joinIndex,distance=Infinity;
+  for(let i=departureIndex;i<normalRoute.length-1;i++){
+    const [ax,ay]=normalRoute[i], [bx,by]=normalRoute[i+1];
+    const dx=bx-ax, dy=by-ay;
+    const t=Math.max(0,Math.min(1,((x-ax)*dx+(y-ay)*dy)/(dx*dx+dy*dy)));
+    const point=[ax+t*dx,ay+t*dy];
+    const candidate=Math.hypot(x-point[0],y-point[1]);
+    if(candidate<distance){distance=candidate;nearest=point;joinIndex=i;}
+  }
+  resumeRideRoute([nearest,...normalRoute.slice(joinIndex+1)]);
 };
+byId('reroute').onclick=()=>resumeRideRoute(recoveryWaypoints);
 byId('showNavigationCard').onclick=()=>showRideCard('navigation');
 byId('showRideBikeCard').onclick=()=>showRideCard('bike');
 byId('rideBikeFareHelp').onclick=()=>notify('잠금해제 비용 없이 1분당 '+currency(ratePerMinute)+'이 계산돼요.');
